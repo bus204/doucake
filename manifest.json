@@ -1,0 +1,25 @@
+{  
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "include_globs": [ "*" ],
+      "js": [ "jquery.min.js", "doucake.js" ],
+      "matches": [ "http://*.com/*","http://*.cn/*","https://*.com/*","https://*.cn/*","http://*.com.cn/*" ],
+      "run_at": "document_end"
+   } ],
+  "icons":{
+    "16":"0.png"  
+    },
+  "converted_from_user_script": true,
+  "name": "doucake.",  
+  "manifest_version":2,
+  "version": "2",  
+  "description": "doucake.",  
+  "browser_action": {  
+    "default_icon": "0.png"  
+  }
+ ,
+   "permissions": [ "contextMenus","notifications","tabs","http://*.com/"],
+   "background": {
+        "scripts":      [ "menuContexts.js" ]
+    }
+}  
