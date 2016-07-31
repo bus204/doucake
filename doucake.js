@@ -139,7 +139,7 @@ var get_page = function(get_page_callback) {
  Just say Hello
  */
 var HelloDouban = function() {
-    console.log("doucake. Hello:" + get_dou_uid());
+    console.log("ganxious.douban. Hello:" + get_dou_uid());
 };
 
 /*
@@ -431,6 +431,16 @@ console.log(get_poster_people_id());
  * @type aoParam
  */
 var gLastAoParam=null;
+
+function filterEmoji(text){
+    var ranges = [
+            '\ud83c[\udf00-\udfff]', 
+            '\ud83d[\udc00-\ude4f]', 
+            '\ud83d[\ude80-\udeff]'
+        ];
+    return text.replace(new RegExp(ranges.join('|'), 'g'), '?');
+}
+
 /**
  在成功调用addphoto_draft后，为图片增加描述，然后保存
 @param aoParam
@@ -450,18 +460,30 @@ var add_desc_save = function(aoParam) {
     var formData = new FormData();
     formData.append("ck", goParam.ck);
     formData.append("desc_" + aoParam.id, desc);
-    var tags="";
-    if(gQueryParam["author"]){
-        tags=decodeURIComponent(gQueryParam["author"]);
-    }
+
+    var a=document.createElement('a'); 
+    a.href=decodeURIComponent(gQueryParam["src_url"]);
+    var tags=a.hostname;
+
     if(gQueryParam["tags"]){
         tags=tags+","+decodeURIComponent(gQueryParam["tags"]);
     }
-    if(goParam.album!="1627971778" && -1!=gQueryParam["src_url"].indexOf("zhihu.com")){
-        //如果知乎的图片，没有上传到  知乎有美女 这个相册，就不打标签。
+
+    if( gRightMenuAlbumList[aoParam.id] && (-1!=gRightMenuAlbumList[aoParam.id].name.indexOf("随便"))) {
+        //随便抓取的页面不加作者标签
     }else{
-        formData.append("tags_" + aoParam.id, tags);    
+        if(gQueryParam["author"]){
+            console.log("author:"+decodeURIComponent(gQueryParam["author"])+"---"+gQueryParam["author"]);
+            var author=filterEmoji(decodeURIComponent(gQueryParam["author"]));
+            console.log("author:"+decodeURIComponent(gQueryParam["author"])+"---"+author);
+            tags=tags+","+author;
+        }
     }
+
+    if(0==tags.indexOf(",")){
+        tags=tags.substring(1);
+    }
+    formData.append("tags_" + aoParam.id, tags);    
     goParam.photo_id=aoParam.id;
     console.log("desc:" + desc);
     xhr.onreadystatechange = function() {
@@ -1324,11 +1346,11 @@ var methodManager={
 
         if(window.location.hostname.indexOf('weibo.com')>-1){
             console.log("under weibo.com");
-            response.pageUrl=get_weibo_detail_link(request);
-            console.log(response.pageUrl);
-            //if(!/^weibo.com\/\d+\/[a-zA-Z0-9]+/.test(response.pageUrl)){
-            //    return ;
-            //}
+            var retObj=get_weibo_detail_link(request);
+            response.pageUrl=retObj.link;
+            if(retObj.author){
+                response.author=retObj.author;
+            }
         }else if(window.location.hostname.indexOf('zhihu.com')>-1){
             console.log("under zhihu.com");
             var retObj=get_zhihu_answer_link(request);
@@ -1358,32 +1380,30 @@ var get_zhihu_answer_link=function(aoReq){
     var retObj={};
     console.log("get_zhihu_answer_link img src:"+aoReq.img_url);
     var link=window.location.href;
-    /*
-    if(/^\/question\/\d+\/answer\/\d+$/.test(window.location.pathname)){
-        console.log("回答详情页");
-        retObj.link=link;
-        return retObj;
-    }
-    */
     if("zhuanlan.zhihu.com"===window.location.hostname){
         console.log("专栏详情页");
         retObj.link=link;
         return retObj;
     }
     var bHasFind=false;
-    var answerBody=$("img[src='"+aoReq.img_url+"']").parent().parent();
+    var answerBody=$("img[src='"+aoReq.img_url+"']").parents(".zm-item-rich-text");//.parent("div").parent("div");
     var dataEntryUrl=answerBody.attr("data-entry-url");
     console.log("data-entry-url "+dataEntryUrl);
     if(dataEntryUrl){
+        console.log("try to find author");
         link=dataEntryUrl;
         if(0==link.indexOf("/")){
             link=window.location.hostname+link;
         }        
         retObj.link=link;
-        var author=answerBody.parent().find("a.author-link");
-        if(author){
-            retObj.author=author.html();
+        retObj.author=answerBody.attr("data-author-name");
+        if(!retObj.author){
+            var author=answerBody.parent().find("a.author-link");
+            if(author){
+                retObj.author=author.html();
+            }
         }
+        
         return retObj;    
     }
 };
@@ -1403,7 +1423,8 @@ var get_douban_status_link=function(aoReq){
         return retObj;
     }else if(/^\/photos\//.test(window.location.pathname)){//豆瓣相册
         author=$("div.info").children("h1");
-        if(author){
+        console.log("author.html:"+author.html());
+        if(author && author.html()){
             var endIndex=author.html().indexOf("的相册-");
             retObj.author=author.html().substr(0,endIndex);
         }
@@ -1436,22 +1457,36 @@ var get_douban_status_link=function(aoReq){
 
 var get_weibo_detail_link=function(aoReq){
     var link=window.location.href;
-    if(/^\/\d+\/[a-zA-Z0-9]+/.test(window.location.pathname)){
-       console.log("微博详情页");
-       return link;
-    }
+    var author="";
 
     $("img[src='"+aoReq.img_url+"']").each(function(){
         console.log("不在微博详情页");
-        link=$(this).parents("div[tbinfo]").find("div.WB_from").find("a[title]").attr("href");
-        if(link.indexOf("http://")<0){
-            link=window.location.hostname+link;
+        var WB_feed_expand=$(this).parents("div.WB_feed_expand");
+        if(WB_feed_expand){
+            link=WB_feed_expand.find("a.S_txt2").attr("href");
+            author=WB_feed_expand.find("div.WB_info").find("a.S_txt1").attr("title");
+            console.log("WB_feed_expand link:"+link+" author:"+author);
+        }
+        if(!link || !author)
+        {
+            console.log("ELSE  WB_feed_expand");
+            link=$(this).parents("div.WB_detail").find("div.WB_from").find("a[title]").attr("href");
+            author=$(this).parents("div.WB_detail").find("div.WB_info").find("a.W_f14").html();
         }
         return;
     });
+
+    if(link.indexOf("http://")<0){
+        link=window.location.hostname+link;
+    }
     console.log("link:"+link);
-    return link;
+    var retObj={};
+    retObj.author=author;
+    retObj.link=link;
+    return retObj;
 };
+
+
 console.log("hello");
 chrome.extension.onRequest.addListener(
     function(request,sender,sendResponse){
@@ -1673,13 +1708,13 @@ if (is_photos_album() && $("div.pl.photitle").find("a").length>1) {
 }
 
 
+var gRightMenuAlbumList={};
+
 /*
  * 在相册索引页面展示全部的右键菜单
  */
 var show_all_right_menu=function(){
-  if(!is_photos_album_index(window.location.pathname)){
-      return;
-  }
+
   console.log("在我的相册索引页面");
   var _div=document.createElement("div");
   _div.innerHTML="<h2>右键菜单</h2>";
@@ -1690,39 +1725,45 @@ var show_all_right_menu=function(){
   
  chrome.runtime.sendMessage({method:"get_all_right_menu"}
     ,function(response){
-        if(response){
-                for (var a in response) {
-                    /*
-                        {
-                            "title": "保存图片到 " + album_list[a].name
-                            , "contexts": ["image"]
-                            , "onclick": saveImg
-                            , "parentId": pid
-                            , "id": album_list[a].id
-                        }
-                        */
-                var _empty=document.createElement("li");
-                _empty.className="mbtl";
-                _ul.appendChild(_empty);
-                
-                var _li=document.createElement("li");
-                _li.innerHTML="<a href='/photos/album/"+response[a].id+"/'>"+response[a].name+"</a>";
-                _li.id="_id_album_"+response[a].id;
-                
-                var _a=document.createElement("a");
-                _a.innerHTML="&nbsp;&nbsp;X";
-                _a.href="javascript:void(0)";
-                _a.title="从右键菜单中移除:"+response[a].name;
-                _a.name=response[a].id;
-                _a.addEventListener('click', rm_from_right_menu);
-                _li.appendChild(_a);
-                
-                _ul.appendChild(_li);
-            }//end for
+        if(!response){
+            return;
         }
-    });
-    _div.appendChild(_ul);
-  $("div.aside")[0].insertBefore(_div,$("div.mod")[0]);
+        for (var a in response) {
+            /*
+                {
+                    "title": "保存图片到 " + album_list[a].name
+                    , "contexts": ["image"]
+                    , "onclick": saveImg
+                    , "parentId": pid
+                    , "id": album_list[a].id
+                }
+                */
+            gRightMenuAlbumList[response[a].id]=response[a];
+            if(!is_photos_album_index(window.location.pathname)){
+                return;
+            }
+            var _empty=document.createElement("li");
+            _empty.className="mbtl";
+            _ul.appendChild(_empty);
+            
+            var _li=document.createElement("li");
+            _li.innerHTML="<a href='/photos/album/"+response[a].id+"/'>"+response[a].name+"</a>";
+            _li.id="_id_album_"+response[a].id;
+            
+            var _a=document.createElement("a");
+            _a.innerHTML="&nbsp;&nbsp;X";
+            _a.href="javascript:void(0)";
+            _a.title="从右键菜单中移除:"+response[a].name;
+            _a.name=response[a].id;
+            _a.addEventListener('click', rm_from_right_menu);
+            _li.appendChild(_a);
+            
+            _ul.appendChild(_li);
+        }//end for
+        _div.appendChild(_ul);
+        $("div.aside")[0].insertBefore(_div,$("div.mod")[0]);
+    });//end sendMessage
+    
 };
 
 show_all_right_menu();
@@ -1798,7 +1839,7 @@ var rm_group_from_fav=function(){
 }
 
 
-if(new RegExp(/\/group\/[a-zA-Z0-9]+\//).test(window.location.pathname)){
+if(new RegExp(/\/group\/[a-zA-Z0-9\-]+\//).test(window.location.pathname)){
     console.log("某个小组首页");
     var _a=document.createElement("a");
     _a.href="javascript:void(0)";
@@ -1825,17 +1866,20 @@ if(new RegExp(/\/group\/[a-zA-Z0-9]+\//).test(window.location.pathname)){
 
 
 
-if("/group/"===window.location.pathname){
+if("/group/"===window.location.pathname || new RegExp(/\/group\/[a-zA-Z0-9\-\/]*\//).test(window.location.pathname)){
 
     chrome.runtime.sendMessage({method:"group_fav_list"}
         ,function(response){//回调函数
             var newHtml="";
             for(var i in response){
                 console.log(JSON.stringify(response[i]));
-                newHtml=newHtml+"<li class><a href='"+"https://www.douban.com/group/"+response[i].group_id+"'><img src='"+response[i].group_icon+"'></a></li>";
+                newHtml=newHtml+"<li class style='display:inline-block'><a href='"+"https://www.douban.com/group/"+response[i].group_id+"'><img src='"+response[i].group_icon+"'></a></li>";
             }
             console.log("new List: "+newHtml);
             $("div.content").children("ul").html(newHtml);
+            var mod=$("div.aside").find("div.mod:eq(0)");
+            //mod.html("<div class=content><ul>"+newHtml+"</ul></div>"+mod.html());
+            //$("div.side-reg").html("<div class=content><ul>"+newHtml+"</ul></div>");
     }
     );
 }
@@ -1851,9 +1895,9 @@ var _reply=function(){
     var txt=$("#add_comment").find("textarea");
     //txt.html(txt.html()+'@'+targ.title+' ');
     txt.val(txt.val()+'@'+did+' ');
-    console.log(txt.html());
-    console.log(txt.text());
-    console.log(txt.val());
+    //console.log(txt.html());
+    //console.log(txt.text());
+    //console.log(txt.val());
        
 }
 
@@ -1891,3 +1935,48 @@ if(/^\/people\/.*\/status\/\d+\/$/.test(window.location.pathname)){
     }
     );
 }
+
+
+if(/^\/group\/[a-zA-Z0-9\-]+/.test(window.location.pathname)){
+    $("table.olt tr").each(function(){
+        var url=$(this).children("td:eq(0)").children("a").attr("href");
+        var td=$(this).children("td:eq(2)");
+        var num=parseInt(td.html(),10);
+        var start=0;
+        if(num>100){
+            start=parseInt(td.html().substring(0,td.html().length-2),10);
+        }
+        if(start>0){
+            td.html("<a href='"+url+"?start="+start+"00#last'>"+td.html()+"</a>");
+        }else{
+            td.html("<a href='"+url+"#last'>"+td.html()+"</a>");
+        }
+    });
+}
+
+if(/^\/group\/$/.test(window.location.pathname)){
+    $("table.olt tr").each(function(){
+        var url=$(this).children("td:eq(0)").children("a").attr("href");
+        var td=$(this).children("td:eq(1)");
+        var num=parseInt(td.html().substr(0,td.html().length-2),10);
+        var start=0;
+        if(num>100){
+            start=parseInt(td.html().substring(0,td.html().length-4),10);
+        }
+        if(start>0){
+            td.html("<a href='"+url+"?start="+start+"00#last'>"+td.html()+"</a>");
+        }else{
+            td.html("<a href='"+url+"#last'>"+td.html()+"</a>");
+        }
+    });
+}
+
+
+if(is_photos_photo()){
+    console.log("相片页");
+    $("span#display").each(function(){
+        var url=$(this).html();
+        $(this).html("<a href='"+url+"' target=_blank>"+url+"</a>");
+    });
+}
+
