@@ -2,6 +2,8 @@
 console.log("hello");
 console.log(window.location);
 
+get_src_link_log();
+
 /*
 	全局的URL参数对象
 	*/
@@ -165,14 +167,6 @@ var downloadFirst = function(aoParam,cb_func) {
     var asUrl = aoParam.src;
 
     console.log('downloadFirst src:' + asUrl);
-    /*
-    if(asUrl.indexOf("?tp=webp")>-1){
-        //暂时对 微信公众号内的图片的hack
-        //后续再进行对 image/webp 图片的格式的支持
-           asUrl=asUrl.substr(0,asUrl.indexOf("?tp=webp"));
-           console.log('downloadFirst src changed to :' + asUrl);
-    }
-    */
     //默认的图片格式。
     vImageType=asUrl.substring(asUrl.lastIndexOf('.')+1);
     if(vImageType.length!=0){
@@ -211,7 +205,15 @@ var downloadFirst = function(aoParam,cb_func) {
                     var uploadParam = aoParam;
                     uploadParam.fileName = fileName;
                     if(cb_func){
-                        cb_func(uploadParam);
+                        var fr=new FileReader();
+                        fr.onload=function(e){
+                            //console.log(e);
+                            //console.log(e.target.result);
+                            uploadParam.dataURL=e.target.result;
+                            //console.log(uploadParam);
+                            cb_func(uploadParam);
+                        };
+                        fr.readAsDataURL(blob);
                     }else{
                         uploadPic(uploadParam);    
                     }
@@ -1376,117 +1378,6 @@ var methodManager={
     }//end call call_get_src_url
 };
 
-var get_zhihu_answer_link=function(aoReq){
-    var retObj={};
-    console.log("get_zhihu_answer_link img src:"+aoReq.img_url);
-    var link=window.location.href;
-    if("zhuanlan.zhihu.com"===window.location.hostname){
-        console.log("专栏详情页");
-        retObj.link=link;
-        return retObj;
-    }
-    var bHasFind=false;
-    var answerBody=$("img[src='"+aoReq.img_url+"']").parents(".zm-item-rich-text");//.parent("div").parent("div");
-    var dataEntryUrl=answerBody.attr("data-entry-url");
-    console.log("data-entry-url "+dataEntryUrl);
-    if(dataEntryUrl){
-        console.log("try to find author");
-        link=dataEntryUrl;
-        if(0==link.indexOf("/")){
-            link=window.location.hostname+link;
-        }        
-        retObj.link=link;
-        retObj.author=answerBody.attr("data-author-name");
-        if(!retObj.author){
-            var author=answerBody.parent().find("a.author-link");
-            if(author){
-                retObj.author=author.html();
-            }
-        }
-        
-        return retObj;    
-    }
-};
-
-var get_douban_status_link=function(aoReq){
-    var retObj={};
-    var link=window.location.href+" "+aoReq.img_url;
-    link=link.replace(/http:\/\/www\./g,'');
-    console.log(link);
-    retObj.link=link;
-
-    if(/^\/.*status\/\d+\/$/.test(window.location.pathname)){//豆瓣广播的详情页
-        author=$("div.text").children("a");
-        if(author){
-            retObj.author=author.html();
-        }
-        return retObj;
-    }else if(/^\/photos\//.test(window.location.pathname)){//豆瓣相册
-        author=$("div.info").children("h1");
-        console.log("author.html:"+author.html());
-        if(author && author.html()){
-            var endIndex=author.html().indexOf("的相册-");
-            retObj.author=author.html().substr(0,endIndex);
-        }
-        return retObj;
-    }
-    else if(/^\/group\/topic\/\d+\/$/.test(window.location.pathname)){//豆瓣小组的帖子
-        console.log("group/topic");
-        link=window.location.href;
-        //找作者
-        var author=$("div.topic-doc").find("span.from").children("a");
-        if(author){
-            retObj.author=author.html();
-        }
-    }else{//豆瓣广播
-        $("img[src='"+aoReq.img_url+"']").each(function(){
-            console.log("find img element");
-            link=$(this).parents("div.bd").find("div.actions").children("span.created_at").find("a").attr("href");
-            author=$(this).parents("div.mod").find("div.text").children("a");
-            if(author){
-                retObj.author=author.html();
-            }
-            return;
-        });
-    }
-    console.log("link:"+link);
-    retObj.link=link;
-
-    return retObj;
-};
-
-var get_weibo_detail_link=function(aoReq){
-    var link=window.location.href;
-    var author="";
-
-    $("img[src='"+aoReq.img_url+"']").each(function(){
-        console.log("不在微博详情页");
-        var WB_feed_expand=$(this).parents("div.WB_feed_expand");
-        if(WB_feed_expand){
-            link=WB_feed_expand.find("a.S_txt2").attr("href");
-            author=WB_feed_expand.find("div.WB_info").find("a.S_txt1").attr("title");
-            console.log("WB_feed_expand link:"+link+" author:"+author);
-        }
-        if(!link || !author)
-        {
-            console.log("ELSE  WB_feed_expand");
-            link=$(this).parents("div.WB_detail").find("div.WB_from").find("a[title]").attr("href");
-            author=$(this).parents("div.WB_detail").find("div.WB_info").find("a.W_f14").html();
-        }
-        return;
-    });
-
-    if(link.indexOf("http://")<0){
-        link=window.location.hostname+link;
-    }
-    console.log("link:"+link);
-    var retObj={};
-    retObj.author=author;
-    retObj.link=link;
-    return retObj;
-};
-
-
 console.log("hello");
 chrome.extension.onRequest.addListener(
     function(request,sender,sendResponse){
@@ -1498,56 +1389,6 @@ chrome.extension.onRequest.addListener(
 
 var post_tor_group_topic_page_cnt=6;
 
-var quick_delete_comment=function(){
-    var targ;
-    if (!e) var e = window.event;
-    if (e.target) targ = e.target;
-    else if (e.srcElement) targ = e.srcElement;
-    console.log(targ.name);
-    delete_comment(targ.name);
-};
-
-var delete_comment=function(cid){
-        var formData = new FormData();
-        formData.append("ck", getCookie('ck').replace(/\"/g, ""));
-        formData.append("cid", cid);
-        formData.append("reason", "other_reason");
-        formData.append("other","");
-        formData.append("submit","确定");
-
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            $("li#"+cid).fadeOut("slow");
-        }
-    };
-        if(is_my_group_topic()){
-            xhr.open('POST', window.location.pathname+"remove_comment?cid="+cid, true);
-        }else{
-            xhr.open('POST', "/j/group/topic/"+get_group_topic_id(window.location.pathname)+"/remove_comment?cid="+cid, true);
-        }
-        
-        xhr.send(formData);
-};
-
-var quick_delete_comment_this_page=function(){
-    if(!confirm("删除本页全部回复，所有删除掉的内容，都无法恢复，你确定要这样做吗？")){
-        return;
-    }
-    console.log("准备删除本页全部回复");
-    var all_length=$("div.operation_div").length;
-    var index=0;
-    $("div.operation_div").each(function(){
-        delete_comment($(this).find("a[data-cid]").attr("data-cid"));
-        index++;
-        console.log(index+"::::"+all_length);
-        if(index>=all_length){
-            console.log("准备刷新");
-            //window.location.reload();
-            alert("本页删除完成，请刷新页面");
-        }
-    });
-};
 
 /*
  * 是否为帖子首页。 
@@ -1714,8 +1555,9 @@ var gRightMenuAlbumList={};
  * 在相册索引页面展示全部的右键菜单
  */
 var show_all_right_menu=function(){
-
-  console.log("在我的相册索引页面");
+  if( ! $("div.aside")){
+    return;
+  }
   var _div=document.createElement("div");
   _div.innerHTML="<h2>右键菜单</h2>";
   _div.className="mod";
@@ -1979,4 +1821,6 @@ if(is_photos_photo()){
         $(this).html("<a href='"+url+"' target=_blank>"+url+"</a>");
     });
 }
+
+
 

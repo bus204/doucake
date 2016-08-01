@@ -57,6 +57,7 @@ function saveImg(info, tab){
             method:"call_get_src_url"
             ,img_url:info.srcUrl
             ,pageUrl:info.pageUrl
+            ,albumid:info.menuItemId
         }
         ,function(response){
             console.log("sendRequest callback");
@@ -155,45 +156,42 @@ function getQueryString(url, name) {
 var album_list=null;
 var attach_album_list = function() {
     chrome.contextMenus.removeAll();
-    
-/*
- * 增加页面上的右键菜单
- */
+    /*
+     * 增加页面上的右键菜单
+     */
     var pid = chrome.contextMenus.create({
-
         "title": "保存到豆瓣",
         "contexts": ["image","selection"]
     }
     , function() {
         console.log("chrome.contextMenus.create");
-        //console.log(Chrome.extension.lastError);
     }
     );
     console.log(window.localStorage.getItem("album_list"));
     var tmp = "album_list=" + window.localStorage.getItem("album_list");
     eval(tmp);
     console.log(JSON.stringify(album_list));
-    /*
-    在第一个位置上，插入一个按钮，发豆瓣广播。
-    */
-        chrome.contextMenus.create(
-                {
-                    "title": "发 豆瓣广播"
-                    , "contexts": ["image"]
-                    , "onclick": saveImg
-                    , "parentId": pid
-                    , "id": _douban_guangbo
-                }
-        );
-        chrome.contextMenus.create(
-                {
-                    "title": "测试用的"
-                    , "contexts": ["selection"]
-                    , "onclick": test_selection
-                    , "parentId": pid
-                    , "id": "_test_selection"
-                }
-        );
+      /*
+      在第一个位置上，插入一个按钮，发豆瓣广播。
+      */
+      chrome.contextMenus.create(
+              {
+                  "title": "发 豆瓣广播"
+                  , "contexts": ["image"]
+                  , "onclick": saveImg
+                  , "parentId": pid
+                  , "id": _douban_guangbo
+              }
+      );
+      chrome.contextMenus.create(
+              {
+                  "title": "测试用的"
+                  , "contexts": ["image","selection"]
+                  , "onclick": saveImg
+                  , "parentId": pid
+                  , "id": "_test_selection"
+              }
+      );
     for (var a in album_list) {
         chrome.contextMenus.create(
                 {
@@ -205,7 +203,8 @@ var attach_album_list = function() {
                 }
         );
     }//end for
-};
+};//end attach_album_list
+
 attach_album_list();
 /*
  * 监听外部的查询和添加
