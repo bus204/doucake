@@ -1,3 +1,4 @@
+console.log("get_src_link");
 
 
 var get_douban_status_link=function(aoReq){
@@ -57,6 +58,7 @@ var get_douban_status_link=function(aoReq){
         return retObj;    
     }
 };
+unsafeWindow.get_douban_status_link=get_douban_status_link;
 
 var get_weibo_detail_link=function(aoReq){
     var link=window.location.href;
@@ -88,6 +90,7 @@ var get_weibo_detail_link=function(aoReq){
     retObj.link=link;
     return retObj;
 };
+unsafeWindow.get_weibo_detail_link=get_weibo_detail_link;
 
 
 var get_zhihu_answer_link=function(aoReq){
@@ -122,8 +125,11 @@ var get_zhihu_answer_link=function(aoReq){
     }
 };
 
+unsafeWindow.get_zhihu_answer_link=get_zhihu_answer_link;
 
 
-var get_src_link_log=function(){
+var _get_src_link_log=function(){
         console.log("get_src_link.js");    
 }
+
+unsafeWindow.get_src_link_log=_get_src_link_log;

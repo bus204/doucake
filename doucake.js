@@ -1,8 +1,7 @@
 
-console.log("hello");
+console.log("hello,doucake.js");
 console.log(window.location);
 
-get_src_link_log();
 
 /*
 	全局的URL参数对象
@@ -225,6 +224,7 @@ var downloadFirst = function(aoParam,cb_func) {
 
     xhr.send();
 };
+unsafeWindow.downloadFirst=downloadFirst;
 /*
  把指定的图片，上传到指定的相册中。
  aoUploadParam.fileName 目标文件名
@@ -321,6 +321,7 @@ var uploadPic = function(aoUploadParam) {
     });
     console.log("upload pic");
 };
+unsafeWindow.uploadPic=uploadPic;
 
 var post_guangbo=function(aoUploadParam){
     var xhr = new XMLHttpRequest();
@@ -1821,6 +1822,5 @@ if(is_photos_photo()){
         $(this).html("<a href='"+url+"' target=_blank>"+url+"</a>");
     });
 }
-
 
 

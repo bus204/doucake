@@ -1,3 +1,4 @@
+console.log("delete_comment.js");
 
 var quick_delete_comment=function(){
     var targ;
@@ -49,3 +50,5 @@ var quick_delete_comment_this_page=function(){
         }
     });
 };
+
+
