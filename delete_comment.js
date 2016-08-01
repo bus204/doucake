@@ -1,6 +1,6 @@
 console.log("delete_comment.js");
 
-var quick_delete_comment=function(){
+window.quick_delete_comment=function(){
     var targ;
     if (!e) var e = window.event;
     if (e.target) targ = e.target;
@@ -9,7 +9,7 @@ var quick_delete_comment=function(){
     delete_comment(targ.name);
 };
 
-var delete_comment=function(cid){
+window.delete_comment=function(cid){
         var formData = new FormData();
         formData.append("ck", getCookie('ck').replace(/\"/g, ""));
         formData.append("cid", cid);
@@ -32,7 +32,7 @@ var delete_comment=function(cid){
         xhr.send(formData);
 };
 
-var quick_delete_comment_this_page=function(){
+window.quick_delete_comment_this_page=function(){
     if(!confirm("删除本页全部回复，所有删除掉的内容，都无法恢复，你确定要这样做吗？")){
         return;
     }

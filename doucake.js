@@ -162,7 +162,7 @@ var vImageType="image/jpg";
 /*
  启动下载，下载成功后，做上传。
  */
-var downloadFirst = function(aoParam,cb_func) {
+window.downloadFirst = function(aoParam,cb_func) {
     var asUrl = aoParam.src;
 
     console.log('downloadFirst src:' + asUrl);
@@ -224,12 +224,11 @@ var downloadFirst = function(aoParam,cb_func) {
 
     xhr.send();
 };
-unsafeWindow.downloadFirst=downloadFirst;
 /*
  把指定的图片，上传到指定的相册中。
  aoUploadParam.fileName 目标文件名
  */
-var uploadPic = function(aoUploadParam) {
+window.uploadPic = function(aoUploadParam) {
     var asFileName = aoUploadParam.fileName;
     console.log("uploadFile:" + asFileName);
     window.requestFileSystem(window.TEMPORARY, gFileSize, function(fs) {
@@ -321,9 +320,9 @@ var uploadPic = function(aoUploadParam) {
     });
     console.log("upload pic");
 };
-unsafeWindow.uploadPic=uploadPic;
 
-var post_guangbo=function(aoUploadParam){
+
+window.post_guangbo=function(aoUploadParam){
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://www.douban.com/', true);
     xhr.multipart = true;
@@ -352,7 +351,7 @@ var post_guangbo=function(aoUploadParam){
  * @param {type} file
  * @returns {undefined}
  */
-var fileEntryFile = function(file) {
+window.fileEntryFile = function(file) {
     //var formData = new FormData(document.getElementById('uploader-form'));
     var formData = new FormData();
     var fileReader = new FileReader();
@@ -1824,3 +1823,4 @@ if(is_photos_photo()){
 }
 
 
+get_src_link_log();

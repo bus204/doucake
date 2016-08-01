@@ -1,7 +1,4 @@
-console.log("get_src_link");
-
-
-var get_douban_status_link=function(aoReq){
+window.get_douban_status_link=function(aoReq){
     var retObj={};
     var link=window.location.href+" "+aoReq.img_url;
     link=link.replace(/http:\/\/www\./g,'');
@@ -58,9 +55,8 @@ var get_douban_status_link=function(aoReq){
         return retObj;    
     }
 };
-unsafeWindow.get_douban_status_link=get_douban_status_link;
 
-var get_weibo_detail_link=function(aoReq){
+window.get_weibo_detail_link=function(aoReq){
     var link=window.location.href;
     var author="";
 
@@ -90,10 +86,9 @@ var get_weibo_detail_link=function(aoReq){
     retObj.link=link;
     return retObj;
 };
-unsafeWindow.get_weibo_detail_link=get_weibo_detail_link;
 
 
-var get_zhihu_answer_link=function(aoReq){
+window.get_zhihu_answer_link=function(aoReq){
     var retObj={};
     console.log("get_zhihu_answer_link img src:"+aoReq.img_url);
     var link=window.location.href;
@@ -125,11 +120,8 @@ var get_zhihu_answer_link=function(aoReq){
     }
 };
 
-unsafeWindow.get_zhihu_answer_link=get_zhihu_answer_link;
 
 
-var _get_src_link_log=function(){
-        console.log("get_src_link.js");    
+window.get_src_link_log=function(){
+        console.log("get_src_link.js @ 20160801181133");    
 }
-
-unsafeWindow.get_src_link_log=_get_src_link_log;
