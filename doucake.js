@@ -1608,7 +1608,10 @@ var show_all_right_menu=function(){
     
 };
 
-show_all_right_menu();
+if("www.douban.com"==window.location.hostname){
+    show_all_right_menu();
+}
+
 
 
 var hide_group_intro=function(){
@@ -1824,3 +1827,49 @@ if(is_photos_photo()){
 
 
 get_src_link_log();
+
+
+if("/"==window.location.pathname){
+
+    var hiddenUserNameDict={"蟹爸爸陡然一惊":"1"
+        ,"小 蘑 菇。":"1"
+        ,"姑轱古辜":"1"
+        ,"积木人":"1"
+        ,"摇又鸟又鸟的狗":"1"
+        ,"文森":"1"
+    };
+    //首页里面，屏蔽某个人的广播。
+    $("div.status-item").each(function(){
+        if($(this).find("div.text").text().indexOf("推荐小组话题")>-1){
+            $(this).hide();
+            return;
+        }
+        if($(this).find("div.text").text().indexOf("对这个活动感兴趣")>-1){
+            $(this).hide();
+            return;
+        }
+        if($(this).find("div.text").text().indexOf("要参加活动")>-1){
+            $(this).hide();
+            return;
+        }
+        if($(this).find("div.text").text().indexOf("加入了小组")>-1){
+            $(this).hide();
+            return;
+        }
+        var posterName=$(this).find("a.lnk-people").html();
+        //console.log("posterName : "+posterName);
+        if(hiddenUserNameDict[posterName]=="1"){
+            $(this).hide();
+            return;
+        }else{
+            var reshareName=$(this).find("span.reshared_by").html();//
+            if(reshareName){
+                reshareName=reshareName.substr(1,reshareName.length-3);
+                console.log(reshareName);
+                if(hiddenUserNameDict[reshareName]=="1"){
+                    $(this).hide();
+                }
+            }
+        }
+    });
+}

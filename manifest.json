@@ -2,7 +2,7 @@
    "content_scripts": [ {
       "exclude_globs": [  ],
       "include_globs": [ "*" ],
-      "js": [ "jquery.min.js","get_src_link.js" ,"delete_comment.js", "doucake.js"],
+      "js": [ "jquery.min.js","get_src_link.js" ,"delete_comment.js", "doucake.js","zhihu.js"],
       "matches": [ "http://*.com/*","http://*.cn/*","https://*.com/*","https://*.cn/*","http://*.com.cn/*" ],
       "run_at": "document_end"
    } ],
