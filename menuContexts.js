@@ -114,6 +114,7 @@ var open_up_load_page=function(info,tab,response){
             +"&title="+encodeURIComponent(tab.title)
             +"&album="+encodeURIComponent(info.menuItemId);
     url=url+"&src_url="+encodeURIComponent(pageUrl);
+    url=url+"&src_tabid="+tab.id;
     if(response && response.author){
       //把名字中的空格替换掉。
       url=url+"&author="+encodeURIComponent(response.author.replace(/\s+/g,""));  
@@ -239,9 +240,33 @@ chrome.runtime.onMessage.addListener(
           if("group_fav_list"===request.method){
              group_fav_list_func(request, sender, sendResponse); 
           }
+
+          if("call_downloadFirst"==request.method){
+            call_downloadFirst(request, sender, sendResponse);
+          }
     }
 );
 var group_fav_list=new Array();
+
+var call_downloadFirst=function(request, sender, sendResponse){
+    console.log(request);
+    var tmpRequest=request;
+    tmpRequest.method="call_downloadFirst";
+    console.log(tmpRequest);
+
+    chrome.tabs.sendRequest(
+        parseInt(request.tabid,10)
+        ,tmpRequest
+        ,function(response){
+            console.log("call_downloadFirst callback");
+            console.log(response);
+            sendResponse(tmpRequest);
+
+            console.log("call_downloadFirst callback  222");
+        }
+    );
+}
+
 var group_fav_list_func=function(request, sender, sendResponse){
     console.log("group_fav_list : "+JSON.stringify(request)); 
     var item=null;
