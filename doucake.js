@@ -1386,8 +1386,12 @@ if("/"==window.location.pathname){
     _a.href="javascript:void(0)";
     _a.style.cssText="right:70px;position:absolute;top:-24px;line-height:1.2";
     _a.addEventListener('click',__expand_all);
-    //$("div.hd")[0].innerHTML="";//.removeChild($("div.hd")[0].childNodes[0]);
     $("div.hd")[0].appendChild(_a);
+
+
+    $("li.isay-pic").find("a").unbind();
+    $("li.isay-pic").find("a").attr("href","https://www.douban.com/mine/photos");
+
     var hiddenUserNameDict={//
         "蟹爸爸陡然一惊":"1"
         ,"小 蘑 菇。":"1"
@@ -1417,7 +1421,7 @@ if("/"==window.location.pathname){
             $(this).hide();
         }
         if($(this).find("div.text").text().indexOf("推荐日记")>-1){
-        //    $(this).hide();
+            $(this).hide();
         }
         if($(this).find("div.text").text().indexOf("对这个活动感兴趣")>-1){
             $(this).hide();
@@ -1447,5 +1451,5 @@ if("/"==window.location.pathname){
             }
         }
     });
-    
+
 }
