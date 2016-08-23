@@ -113,6 +113,7 @@ var open_up_load_page=function(info,tab,response){
             +"&img_url="+encodeURIComponent(img_src_url)
             +"&title="+encodeURIComponent(tab.title)
             +"&album="+encodeURIComponent(info.menuItemId);
+    url=url+"&token=92012873:b4de5ab6c7a3bdbddd45f0d1418765c97145fd65"
     url=url+"&src_url="+encodeURIComponent(pageUrl);
     url=url+"&src_tabid="+tab.id;
     if(response && response.author){

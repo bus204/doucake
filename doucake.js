@@ -81,11 +81,15 @@ window.parseQueryString=parseQueryString;
  */
 var get_page = function(get_page_callback) {
     console.log("get_page");
+    var gQueryParam = parseQueryString(window.location.search);
+    console.log(gQueryParam);
     /*
     如果入参中，已经包含了token和ck参数，那么就不需要再去获取，直接从链接的参数中获得。
     */
-    if(gQueryParam['ck']!=='' && undefined!==gQueryParam['ck'] && gQueryParam['token']!=='' && gQueryParam['token']!==undefined
-            && ''!==getCookie('token')){
+    if(gQueryParam['ck']!=='' && undefined!==gQueryParam['ck'] && 
+        gQueryParam['token']!=='' && gQueryParam['token']!==undefined
+            && ''!==getCookie('token')
+        ){
         console.log('链接中已经包含ck和token');
         if(''!==getCookie('token')){
             goParam.token = getCookie('token');
@@ -95,12 +99,21 @@ var get_page = function(get_page_callback) {
             console.log('从链接中得到token '+ goParam.token );
         }
          
-         goParam.ck=gQueryParam['ck'];
          console.log(goParam);
          get_page_callback();
          return ;
     }
+
     goParam.ck = getCookie('ck').replace(/\"/g, "");
+
+    if( gQueryParam["token"] && gQueryParam["token"].length>0){
+        goParam.token = gQueryParam['token'];
+        console.log(goParam);
+        console.log("token:"+goParam.token);
+        get_page_callback();
+        return ;
+    }
+
     /*
     访问链接获得
     */
@@ -120,7 +133,7 @@ var get_page = function(get_page_callback) {
                         arr[1]
                         );
                 goParam.token = arr[1];
-                console.log(goParam);
+                console.log("token:"+goParam.token);
                 //调用回调函数
                 get_page_callback();
             }//200
@@ -130,7 +143,7 @@ var get_page = function(get_page_callback) {
             }
         }//state==4
     };
-
+    console.log("requset upload page to get UPLOAD_AUTH_TOKEN");
     var formData = new FormData();
     xhr.send(formData);
 };
