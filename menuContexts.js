@@ -47,6 +47,7 @@ function saveImg(info, tab){
    if(!/.*zhihu.com/.test(a.hostname)
    &&!/.*weibo.com/.test(a.hostname)
    &&!/www.douban.com/.test(a.hostname)
+   &&!/twitter.com/.test(a.hostname)
     ){
        open_up_load_page(info,tab);
        return;

@@ -87,6 +87,18 @@ window.get_weibo_detail_link=function(aoReq){
     return retObj;
 };
 
+window.get_twitter_detail_link=function(aoReq){
+    console.log("get_twitter_detail_link img src:"+aoReq.img_url);
+    var retObj={};
+    var link=window.location.href;
+    var answerBody=$("img[src='"+aoReq.img_url+"']").parents(".AdaptiveMedia-singlePhoto").parents("div.content");//.parent("div").parent("div");
+    if(answerBody){
+        link="https://twitter.com/"+answerBody.find("small.time").find("a").attr("href");
+        retObj.author=answerBody.find("span.username").text();
+    }
+    retObj.link=link;
+    return retObj;
+}
 
 window.get_zhihu_answer_link=function(aoReq){
     var retObj={};

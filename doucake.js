@@ -931,7 +931,15 @@ var methodManager={
             if(retObj.author){
                 response.author=retObj.author;
             }
-        } else{
+        }else if(window.location.hostname.indexOf('twitter.com')>-1 ){
+            console.log("twitter.com");
+            var retObj=get_twitter_detail_link(request);
+            response.pageUrl=retObj.link;
+            if(retObj.author){
+                response.author=retObj.author;
+            }
+        }
+        else{
             console.log("域名未知");
             response.pageUrl=window.location.href;
          //   return ;
@@ -1390,7 +1398,7 @@ if(is_photos_photo()){
 }
 
 
-if("/"==window.location.pathname){
+if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com")>-1){
     var __expand_all=function(){
         $("div.status-item").show();
     }
