@@ -1407,47 +1407,51 @@ if("/"==window.location.pathname){
 
     var hiddenUserNameDict={//
         "蟹爸爸陡然一惊":"1"
+        ,"换个蠢名字再":"1"
         ,"小 蘑 菇。":"1"
         ,"姑轱古辜":"1"
+        ,"墨水螃蟹":"1"
         ,"积木人":"1"
         ,"摇又鸟又鸟的狗":"1"
         ,"文森":"1"
+        ,"待注销":"1"
         ,"墨水螃蟹好揾钱":"1"
         ,"风四":"1"
         ,"哎呦喂":"1"
         ,"羊":"1"
         ,"SamBar.":"1"
         ,"郎三":"1"
+        ,"骚红鲁蛋":"1"
+        ,"自来红":"1"
+        ,"苏小云":"1"
+        ,"采桑子":"1"
+        ,"Echo":"1"
+        ,"dearbear":"1"
+        ,"o":"1"
+        ,"刘筱芯":"1"
+        ,"emma":"1"
+        ,"拐早":"1"
+        ,"大庭叶藏":"1"
+        ,"嬉皮绅士韦小宝":"1"
+        ,"4-D":"1"
+        ,"严禁怀念":"1"
+        ,"刮刮油":"1"
+        ,"白鲸":"1"
+        ,"Pardon":"1"
+        ,"molliz":"1"
+        ,"紫菱不要走边边":"1"
+        ,"誒~？鲁蛋":"1"
+        ,"s名字要长":"1"
+        ,"亲爱的桂花树":"1"
+        ,"喂鸡":"1"
+        ,"鹿丸の伪装":"1"
+        ,"董卓小蛮腰":"1"
+        ,"吐槽公交车":"1"
+        ,"平凡的鹿":"1"
     };
     //首页里面，屏蔽某个人的广播。
     $("div.status-item").each(function(){
-        if($(this).attr("data-object-kind")=="4504"){
-            $(this).hide();
-        }
-        if($(this).attr("data-target-type")=="movie"){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("向豆列")>-1){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("推荐小组话题")>-1){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("推荐日记")>-1){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("对这个活动感兴趣")>-1){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("关注了成员")>-1){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("要参加活动")>-1){
-            $(this).hide();
-        }
-        if($(this).find("div.text").text().indexOf("加入了小组")>-1){
-            $(this).hide();
-        }
+
         var posterName=$(this).find("a.lnk-people").html();
         if(hiddenUserNameDict[posterName]=="1"){
             $(this).hide();

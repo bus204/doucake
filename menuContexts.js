@@ -322,7 +322,7 @@ var add_group_to_fav=function(request, sender, sendResponse){
     if(!group_fav_list){
       group_fav_list=new Array();
     }
-    group_fav_list.push({"group_id":request.group_id,"group_icon":request.group_icon});
+    group_fav_list.unshift({"group_id":request.group_id,"group_icon":request.group_icon});
     sendResponse(item);
     window.localStorage.setItem("group_fav_list",JSON.stringify(group_fav_list));
     console.log(JSON.stringify(group_fav_list));
