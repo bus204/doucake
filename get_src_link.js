@@ -91,8 +91,9 @@ window.get_twitter_detail_link=function(aoReq){
     console.log("get_twitter_detail_link img src:"+aoReq.img_url);
     var retObj={};
     var link=window.location.href;
-    var answerBody=$("img[src='"+aoReq.img_url+"']").parents(".AdaptiveMedia-singlePhoto").parents("div.content");//.parent("div").parent("div");
+    var answerBody=$("img[src='"+aoReq.img_url+"']").parents("div.content");//.parent("div").parent("div");
     if(answerBody){
+        console.log("find the detail element");
         link="https://twitter.com/"+answerBody.find("small.time").find("a").attr("href");
         retObj.author=answerBody.find("span.username").text();
     }
