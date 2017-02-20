@@ -112,24 +112,37 @@ window.get_zhihu_answer_link=function(aoReq){
     }
     var bHasFind=false;
     var answerBody=$("img[src='"+aoReq.img_url+"']").parents(".zm-item-rich-text");//.parent("div").parent("div");
-    var dataEntryUrl=answerBody.attr("data-entry-url");
-    console.log("data-entry-url "+dataEntryUrl);
-    if(dataEntryUrl){
-        console.log("try to find author");
-        link=dataEntryUrl;
+    if(answerBody){
+        var dataEntryUrl=answerBody.attr("data-entry-url");
+        console.log("data-entry-url "+dataEntryUrl);
+        if(dataEntryUrl){
+            console.log("try to find author");
+            link=dataEntryUrl;
+            if(0==link.indexOf("/")){
+                link=window.location.hostname+link;
+            }        
+            retObj.link=link;
+            retObj.author=answerBody.attr("data-author-name");
+            if(!retObj.author){
+                var author=answerBody.parent().find("a.author-link");
+                if(author){
+                    retObj.author=author.html();
+                }
+            }
+            
+            return retObj;    
+        }
+    }
+    answerBody=$("img[src='"+aoReq.img_url+"']").parents(".ContentItem");
+    if(answerBody){
+        console.log("img .parents.ContentItem");
+        link=answerBody.children(".ContentItem-title").children("a").attr("href");
         if(0==link.indexOf("/")){
             link=window.location.hostname+link;
-        }        
-        retObj.link=link;
-        retObj.author=answerBody.attr("data-author-name");
-        if(!retObj.author){
-            var author=answerBody.parent().find("a.author-link");
-            if(author){
-                retObj.author=author.html();
-            }
         }
-        
-        return retObj;    
+        retObj.link=link;
+        retObj.author=answerBody.children("a.UserLink-link").text();
+        return retObj;
     }
 };
 
