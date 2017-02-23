@@ -7,9 +7,11 @@ window.get_douban_status_link=function(aoReq){
     console.log("aoReq.albumid : "+aoReq.albumid);
 
     if(/^\/.*status\/\d+\/$/.test(window.location.pathname)){//豆瓣广播的详情页
+        var douban_uid=$("div.status-item").attr("data-uid");
+        retObj.author=douban_uid;
         author=$("div.text").children("a");
         if(author){
-            retObj.author=author.html();
+            retObj.author=retObj.author+","+author.html();
         }
     }else if(/^\/photos\//.test(window.location.pathname)){//豆瓣相册
         author=$("div.info").children("h1");
@@ -26,14 +28,21 @@ window.get_douban_status_link=function(aoReq){
         var author=$("div.topic-doc").find("span.from").children("a");
         if(author){
             retObj.author=author.html();
+            var _href=author.attr("href")
+            var douban_uid=_href.substring(0,_href.length-1);
+            douban_uid=douban_uid.substring(douban_uid.lastIndexOf("/")+1);
+            retObj.author=author.html()+","+douban_uid;
         }
+
     }else{//豆瓣广播
         $("img[src='"+aoReq.img_url+"']").each(function(){
             console.log("find img element");
+            var douban_uid=$(this).parents("div.status-item").attr("data-uid");
+            retObj.author=douban_uid;
             link=$(this).parents("div.bd").find("div.actions").children("span.created_at").find("a").attr("href");
             author=$(this).parents("div.mod").find("div.text").children("a");
             if(author){
-                retObj.author=author.html();
+                retObj.author=retObj.author+","+author.html();
             }
             return;
         });

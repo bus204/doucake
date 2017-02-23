@@ -1437,6 +1437,10 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
         "133431218":"1013"
         //文森  全部
         ,"115947384":"ALL"
+        //小蘑菇
+        ,"58404341":"ALL"
+        //
+        ,"61296149":"ALL"
     };
     //首页里面，屏蔽某个人的广播。
     $("div.new-status").each(function(){
