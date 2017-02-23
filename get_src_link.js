@@ -137,11 +137,14 @@ window.get_zhihu_answer_link=function(aoReq){
     if(answerBody){
         console.log("img .parents.ContentItem");
         link=answerBody.children(".ContentItem-title").children("a").attr("href");
-        if(0==link.indexOf("/")){
-            link=window.location.hostname+link;
+        if(link){
+            if(0==link.indexOf("/")){
+                link=window.location.hostname+link;
+            }
+            retObj.link=link;
         }
-        retObj.link=link;
-        retObj.author=answerBody.children("a.UserLink-link").text();
+        var authorElem=answerBody.find("a.UserLink-link");
+        retObj.author=authorElem.text();    
         return retObj;
     }
 };

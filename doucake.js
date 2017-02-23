@@ -1417,42 +1417,41 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     $(this).find("div.status-item").attr("data-target-type")
     + sns 广播
     + movie 电影
+    + rec 推荐
+    + "" 转播？？
 
-    data-object-kind
+
+    
+    $(this).find("div.status-item").attr("data-object-kind")
     + 1000 关注了新成员
     + 1018 广播
     + 1002 想看
     + 1022 推荐网页
     + 1025 推荐相册
-    + 
+    + 1013 小组话题
+
     */
     var forbidShowUserNameStatusConfig={//
-        "墨水螃蟹":"1"
-        ,"喂鸡":"1"
-        ,"4-D":"1"
-        ,"有什么意义":"1"
-        ,"换个蠢名字再":"1"
-        ,"郎三":"1"
-        ,"Primrose":"1"
-        ,"dearbear":"1"
-        ,"文森":"1"
-        ,"小 蘑 菇。":"1"
-        ,"誒~？鲁蛋":"1"
-        ,"吐槽公交车":"1"
-        ,"p":"1"
-        ,"苏小云":"1"
-        ,"molliz":"1"
+        //data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
+        //林夕 小组话题推荐
+        "133431218":"1013"
+        //文森  全部
+        ,"115947384":"ALL"
     };
     //首页里面，屏蔽某个人的广播。
-    $("div.status-wrapper").each(function(){
-        var posterName=$(this).find("a.lnk-people").html();
-        var postType=$(this).find("div.status-item").attr("data-target-type")
-        console.log("posterName:"+posterName+",postType:"+postType);
-        if("1"==forbidShowUserNameStatusConfig[posterName]){
+    $("div.new-status").each(function(){
+        var _status=$(this).find("div.status-item");
+        var posterName=_status.find("a.lnk-people").html();
+        var data_uid=_status.attr("data-uid");
+        var postType=_status.attr("data-target-type")
+        var objectKind=_status.attr("data-object-kind")
+        if(!forbidShowUserNameStatusConfig[data_uid]){
+            //无配置，打开的。
+            console.log("show posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf(objectKind) || "ALL"==forbidShowUserNameStatusConfig[data_uid]){
             //如果配置了，我不想看到这个人的状态。
             $(this).hide();
-        }else{
-            //默认是打开的。
+            console.log("hide posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
         }
     });
 
