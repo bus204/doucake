@@ -1418,6 +1418,7 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     + sns 广播
     + movie 电影
     + rec 推荐
+    + site 小站
     + "" 转播？？
 
 
@@ -1427,9 +1428,12 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     + 1018 广播
     + 1002 想看
     + 1022 推荐网页
-    + 1025 推荐相册
+    + 1025 推荐相册中的照片
+    + 1026 推荐相册
     + 1013 小组话题
-
+    + 1015 日记
+    + 2001 参加线上活动
+    + 3043 豆瓣FM
     */
     var forbidShowUserNameStatusConfig={//
         //data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
@@ -1441,22 +1445,63 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
         ,"58404341":"ALL"
         //
         ,"61296149":"ALL"
+        //
+        ,"my774880647":"ALL"
+        ,"1957950815":"ALL"
+        ,"125837622":"ALL"
     };
+
+    var bHideStatus=function(data_uid,data_target_type,data_object_kind){
+        if(!forbidShowUserNameStatusConfig[data_uid]){
+            return false;
+        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf(data_object_kind) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf(data_target_type)//
+            || "ALL"==forbidShowUserNameStatusConfig[data_uid]){
+            return true;
+        }
+        return false;
+    }
+    var get_data_uid_from_href=function(_href){
+        _href=_href.substring(0,_href.length-1)
+        return _href.substring(_href.lastIndexOf("/")+1);
+    }
     //首页里面，屏蔽某个人的广播。
     $("div.new-status").each(function(){
         var _status=$(this).find("div.status-item");
         var posterName=_status.find("a.lnk-people").html();
-        var data_uid=_status.attr("data-uid");
-        var postType=_status.attr("data-target-type")
-        var objectKind=_status.attr("data-object-kind")
-        if(!forbidShowUserNameStatusConfig[data_uid]){
+        var posterHref=_status.find("a.lnk-people").attr("href");
+        //var data_uid=_status.attr("data-uid");
+        var data_uid=get_data_uid_from_href(posterHref);
+        var postType=_status.attr("data-target-type");
+        var objectKind=_status.attr("data-object-kind");
+        if(!bHideStatus(data_uid,postType,objectKind)){
             //无配置，打开的。
             console.log("show posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
-        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf(objectKind) || "ALL"==forbidShowUserNameStatusConfig[data_uid]){
+        }else {
             //如果配置了，我不想看到这个人的状态。
             $(this).hide();
             console.log("hide posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
         }
-    });
+
+        //如果是转播
+        _href=$(this).find("span.reshared_by").find("a").attr("href");
+        if(-1!=$(this).attr("class").indexOf("status-reshared-wrapper") || _href){
+            console.log("this is refresh");
+            postType="refresh";
+            if(!_href){
+                _href=$(this).find("div.reshared_hd").attr("data-status-url");
+            }
+            data_uid=get_data_uid_from_href(_href);
+            if(!bHideStatus(data_uid,postType,objectKind)){
+                //无配置，打开的。
+                console.log("show posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+            }else {
+                //如果配置了，我不想看到这个人的状态。
+                $(this).hide();
+                console.log("hide posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+            }
+        }//end span.reshared_by
+    });//end $("div.new-status").each(function())
+
 
 }

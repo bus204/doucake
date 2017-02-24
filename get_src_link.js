@@ -38,6 +38,9 @@ window.get_douban_status_link=function(aoReq){
         $("img[src='"+aoReq.img_url+"']").each(function(){
             console.log("find img element");
             var douban_uid=$(this).parents("div.status-item").attr("data-uid");
+            if($(this).parents("div.new-status").find("span.reshared_by")){
+                console.log("this is refresh");
+            }
             retObj.author=douban_uid;
             link=$(this).parents("div.bd").find("div.actions").children("span.created_at").find("a").attr("href");
             author=$(this).parents("div.mod").find("div.text").children("a");
