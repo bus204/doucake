@@ -1419,12 +1419,13 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     + movie 电影
     + rec 推荐
     + site 小站
-    + "" 转播？？
+    + "" 转播？？  --  refresh
 
 
     
     $(this).find("div.status-item").attr("data-object-kind")
     + 1000 关注了新成员
+    + 1001 图书
     + 1018 广播
     + 1002 想看
     + 1022 推荐网页
@@ -1438,25 +1439,37 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     var forbidShowUserNameStatusConfig={//
         //data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
         //林夕 小组话题推荐
-        "133431218":"1013"
+        "133431218":"-1013"
         //文森  全部
-        ,"115947384":"ALL"
+        ,"115947384":"-ALL"
         //小蘑菇
-        ,"58404341":"ALL"
+        ,"58404341":"-ALL"
         //
-        ,"61296149":"ALL"
+        ,"61296149":"-ALL"
         //
-        ,"my774880647":"ALL"
-        ,"1957950815":"ALL"
-        ,"125837622":"ALL"
+        ,"my774880647":"-ALL"
+        ,"1957950815":"-ALL"
+        ,"125837622":"-ALL"
+        ,"115970827":"-ALL"
+        ,"57425095":"-ALL"
+        ,"50012669":"-1000;"
+        ,"lemonhall2016":"-1000;-1001;-1022"
     };
 
     var bHideStatus=function(data_uid,data_target_type,data_object_kind){
         if(!forbidShowUserNameStatusConfig[data_uid]){
             return false;
-        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf(data_object_kind) //
-            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf(data_target_type)//
-            || "ALL"==forbidShowUserNameStatusConfig[data_uid]){
+        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf("+"+data_object_kind) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("+"+data_target_type) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("+"+"ALL")//
+        )//end if
+        {
+            return false;
+        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf("-"+data_object_kind) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("-"+data_target_type)//
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("-"+"ALL")//
+        )//end if
+        {
             return true;
         }
         return false;
@@ -1474,6 +1487,9 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
         var data_uid=get_data_uid_from_href(posterHref);
         var postType=_status.attr("data-target-type");
         var objectKind=_status.attr("data-object-kind");
+        if(postType==""){
+            postType="refresh";
+        }
         if(!bHideStatus(data_uid,postType,objectKind)){
             //无配置，打开的。
             console.log("show posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);

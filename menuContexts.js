@@ -105,7 +105,7 @@ var open_up_load_page=function(info,tab,response){
         try{
             var myArr=/.*\/p(\d+).*/.exec(img_src_url);
             if(myArr && myArr.length>0){
-                pageUrl="www.douban.com/photos/photo/"+myArr[1]+"/";
+                pageUrl="https://www.douban.com/photos/photo/"+myArr[1]+"/";
             }
         }catch(e){}
     }

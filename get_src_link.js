@@ -1,7 +1,7 @@
 window.get_douban_status_link=function(aoReq){
     var retObj={};
-    var link=window.location.href+" "+aoReq.img_url;
-    link=link.replace(/http:\/\/www\./g,'');
+    var link=window.location.href;//+" "+aoReq.img_url;
+    //link=link.replace(/http:\/\/www\./g,'');
     console.log(link);
     retObj.link=link;
     console.log("aoReq.albumid : "+aoReq.albumid);
@@ -13,13 +13,35 @@ window.get_douban_status_link=function(aoReq){
         if(author){
             retObj.author=retObj.author+","+author.html();
         }
-    }else if(/^\/photos\//.test(window.location.pathname)){//豆瓣相册
-        author=$("div.info").children("h1");
+    }else if(/^\/photos\/photo\//.test(window.location.pathname)){//豆瓣相册相片
+        var _mod=$("div.mod-usercard");
+        link=window.location.href;
+        author=_mod.find("div.content").find("a");
         console.log("author.html:"+author.html());
         if(author && author.html()){
-            var endIndex=author.html().indexOf("的相册-");
-            retObj.author=author.html().substr(0,endIndex);
+            var _href=author.attr("href")
+            var douban_uid=_href.substring(0,_href.length-1);
+            douban_uid=douban_uid.substring(douban_uid.lastIndexOf("/")+1);
+            retObj.author=author.html()+","+douban_uid;
         }
+    }else if(/^\/photos\/album\//.test(window.location.pathname)){//豆瓣相册页
+        var _mod=$("div.mod-usercard");
+        link=window.location.href;
+        author=_mod.find("div.content").find("a");
+        console.log("author.html:"+author.html());
+        if(author && author.html()){
+            var _href=author.attr("href")
+            var douban_uid=_href.substring(0,_href.length-1);
+            douban_uid=douban_uid.substring(douban_uid.lastIndexOf("/")+1);
+            retObj.author=author.html()+","+douban_uid;
+        }
+        $("img[src='"+aoReq.img_url+"']").each(function(){
+            console.log("find img element");
+            link=$(this).parents("a").attr("href");
+            retObj.link=link;
+            return;
+        });//end img[src='"+aoReq.img_url+"']").each(function(){
+
     }
     else if(/^\/group\/topic\/\d+\/$/.test(window.location.pathname)){//豆瓣小组的帖子
         console.log("group/topic");
@@ -40,6 +62,7 @@ window.get_douban_status_link=function(aoReq){
             var douban_uid=$(this).parents("div.status-item").attr("data-uid");
             if($(this).parents("div.new-status").find("span.reshared_by")){
                 console.log("this is refresh");
+                
             }
             retObj.author=douban_uid;
             link=$(this).parents("div.bd").find("div.actions").children("span.created_at").find("a").attr("href");
@@ -48,7 +71,7 @@ window.get_douban_status_link=function(aoReq){
                 retObj.author=retObj.author+","+author.html();
             }
             return;
-        });
+        });//end img[src='"+aoReq.img_url+"']").each(function(){
     }
     console.log("link:"+link);
     retObj.link=link;

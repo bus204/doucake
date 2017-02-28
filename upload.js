@@ -330,8 +330,6 @@ var add_desc_save = function(aoParam) {
         desc=decodeURIComponent(gQueryParam["src_url"]);
         console.log("desc:"+desc);
     }
-    desc=desc.replace(/www\./g,'');
-
     console.log("desc:" + desc);
     var formData = new FormData();
     formData.append("ck", goParam.ck);
