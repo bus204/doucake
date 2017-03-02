@@ -14,6 +14,7 @@ window.get_douban_status_link=function(aoReq){
             retObj.author=retObj.author+","+author.html();
         }
     }else if(/^\/photos\/photo\//.test(window.location.pathname)){//豆瓣相册相片
+        console.log("豆瓣相册相片");
         var _mod=$("div.mod-usercard");
         link=window.location.href;
         author=_mod.find("div.content").find("a");
@@ -24,6 +25,16 @@ window.get_douban_status_link=function(aoReq){
             douban_uid=douban_uid.substring(douban_uid.lastIndexOf("/")+1);
             retObj.author=author.html()+","+douban_uid;
         }
+        if(!retObj.title){
+            retObj.title=document.title;
+        }
+        if($("div.photo_descri")){
+            retObj.title+=",#漂亮的陌生人# "+$("div.photo_descri").text();
+        }else  if($("span#display")){
+            retObj.title=$("span#display").text();
+        } 
+        
+        console.log(retObj);
     }else if(/^\/photos\/album\//.test(window.location.pathname)){//豆瓣相册页
         var _mod=$("div .info");
         link=window.location.href;
@@ -56,7 +67,9 @@ window.get_douban_status_link=function(aoReq){
             douban_uid=douban_uid.substring(douban_uid.lastIndexOf("/")+1);
             retObj.author=author.html()+","+douban_uid;
         }
-
+        if(!retObj.title){
+            retObj.title=" #漂亮的陌生人# "+document.title;
+        }
     }else{//豆瓣广播
         $("img[src='"+aoReq.img_url+"']").each(function(){
             console.log("find img element");
