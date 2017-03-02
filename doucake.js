@@ -1,6 +1,7 @@
 
-console.log("hello");
+console.log("hello,doucake.js");
 console.log(window.location);
+
 
 /*
 	全局的URL参数对象
@@ -16,10 +17,6 @@ var is_photos_album_index=function(pathname){
    return /\/people\/.*?\/photos/.test(pathname) && $("span.btn-pic-upload").length>1;
 };
 
-var is_photos_album_upload=function(pathname){
-        console.log("is_photos_album_upload:"+pathname);
-    	return (/\/photos\/album\/[\d+]\/upload/.test(pathname)  || /\//.test(pathname))&& gQueryParam["src_url"] && "true"===gQueryParam["auto_upload"];
-};
 var is_photos_album=function(){
 	return /.*\/photos\/album\/\d+\/$/.test(window.location.pathname);
 };
@@ -77,16 +74,22 @@ function parseQueryString(vhref) {
     return vars;
 }
 
+window.parseQueryString=parseQueryString;
+
 /**
  打开upload页面，得到upload_token
  */
 var get_page = function(get_page_callback) {
     console.log("get_page");
+    var gQueryParam = parseQueryString(window.location.search);
+    console.log(gQueryParam);
     /*
     如果入参中，已经包含了token和ck参数，那么就不需要再去获取，直接从链接的参数中获得。
     */
-    if(gQueryParam['ck']!=='' && undefined!==gQueryParam['ck'] && gQueryParam['token']!=='' && gQueryParam['token']!==undefined
-            && ''!==getCookie('token')){
+    if(gQueryParam['ck']!=='' && undefined!==gQueryParam['ck'] && 
+        gQueryParam['token']!=='' && gQueryParam['token']!==undefined
+            && ''!==getCookie('token')
+        ){
         console.log('链接中已经包含ck和token');
         if(''!==getCookie('token')){
             goParam.token = getCookie('token');
@@ -96,12 +99,21 @@ var get_page = function(get_page_callback) {
             console.log('从链接中得到token '+ goParam.token );
         }
          
-         goParam.ck=gQueryParam['ck'];
          console.log(goParam);
          get_page_callback();
          return ;
     }
+
     goParam.ck = getCookie('ck').replace(/\"/g, "");
+
+    if( gQueryParam["token"] && gQueryParam["token"].length>0){
+        goParam.token = gQueryParam['token'];
+        console.log(goParam);
+        console.log("token:"+goParam.token);
+        get_page_callback();
+        return ;
+    }
+
     /*
     访问链接获得
     */
@@ -121,7 +133,7 @@ var get_page = function(get_page_callback) {
                         arr[1]
                         );
                 goParam.token = arr[1];
-                console.log(goParam);
+                console.log("token:"+goParam.token);
                 //调用回调函数
                 get_page_callback();
             }//200
@@ -131,10 +143,11 @@ var get_page = function(get_page_callback) {
             }
         }//state==4
     };
-
+    console.log("requset upload page to get UPLOAD_AUTH_TOKEN");
     var formData = new FormData();
     xhr.send(formData);
 };
+window.get_page=get_page;
 /*
  Just say Hello
  */
@@ -149,253 +162,7 @@ var HelloDouban = function() {
  goParam.path    待上传文件的路径
  goParam.desc    待上传文件的描述
  */
-var goParam = {};
-/*
- 本地文件系统对象
- */
-var g_fs = null;
-
-var gFileSize=(1024*1024);
-var vImageType="image/jpg";
-
-/*
- 启动下载，下载成功后，做上传。
- */
-var downloadFirst = function(aoParam,cb_func) {
-    var asUrl = aoParam.src;
-
-    console.log('downloadFirst src:' + asUrl);
-    /*
-    if(asUrl.indexOf("?tp=webp")>-1){
-        //暂时对 微信公众号内的图片的hack
-        //后续再进行对 image/webp 图片的格式的支持
-           asUrl=asUrl.substr(0,asUrl.indexOf("?tp=webp"));
-           console.log('downloadFirst src changed to :' + asUrl);
-    }
-    */
-    //默认的图片格式。
-    vImageType=asUrl.substring(asUrl.lastIndexOf('.')+1);
-    if(vImageType.length!=0){
-    	vImageType="image/"+vImageType;
-    }
-    console.log("vImageType:"+vImageType);
-    if(null===gLastAoParam){
-        gLastAoParam=get_poem_prefix()+"\n 【时光机】\nSRC: "+document.title+" https://"+window.location.hostname+window.location.pathname+"\n TO: \n";//
-    }
-    gLastAoParam=gLastAoParam+"\n-----------------------\n"+asUrl+"\n";
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', asUrl, true);
-    xhr.responseType = 'blob';
-    xhr.onload = function(e) {
-        console.log('xhr.onload');
-        window.requestFileSystem(window.TEMPORARY, gFileSize, function(fs) {
-            g_fs = fs;
-            var fileName = getFileName(asUrl);
-
-            console.log("fileName:" + fileName);
-            fs.root.getFile(fileName, {create: true}, function(fileEntry) {
-
-                console.log("getFile");
-                fileEntry.createWriter(function(writer) {
-
-                    writer.onwrite = function(e) {
-                    };
-                    writer.onerror = function(e) {
-                    };
-
-                    var blob = new Blob([xhr.response], {type: vImageType});
-
-                    writer.write(blob);
-                    console.log("save pics success,begin to upload");
-                    var uploadParam = aoParam;
-                    uploadParam.fileName = fileName;
-                    if(cb_func){
-                        cb_func(uploadParam);
-                    }else{
-                        uploadPic(uploadParam);    
-                    }
-                }, writeFileErrorHandler);
-            }, getFileErrorHandler);
-
-        }, requestFileSystemErrHandler);
-    };
-
-    xhr.send();
-};
-/*
- 把指定的图片，上传到指定的相册中。
- aoUploadParam.fileName 目标文件名
- */
-var uploadPic = function(aoUploadParam) {
-    var asFileName = aoUploadParam.fileName;
-    console.log("uploadFile:" + asFileName);
-    window.requestFileSystem(window.TEMPORARY, gFileSize, function(fs) {
-    console.log("requestFileSystem success");
-    fs.root.getFile(
-            asFileName//
-            , {}//
-    , function(fileEntry) {
-        console.log("function(fileEntry)");
-        fileEntry.file(function(file) {
-            console.log("fileEntry.file");
-            var formData = new FormData();
-
-            console.log('fileReader.onloadend');
-            var xhr = new XMLHttpRequest();
-            var targetUrl="https://www.douban.com/j/photos/addphoto_draft";
-            if('DOUBAN_GUANGBO'==goParam.album){
-				targetUrl='https://www.douban.com/j/upload';
-            }
-            
-           	xhr.open('POST', targetUrl, true);	
-            console.log('open addphoto_draft targetUrl:'+targetUrl);
-
-            xhr.multipart = true;
-            if(gQueryParam.album=="DOUBAN_GUANGBO"){
-            	var fileBlob = new Blob(
-	                    [file]
-	                    , {
-	                               type: vImageType
-	                               , filename: asFileName
-	            });
-	            formData.append("image", fileBlob);
-	            formData.append("category", "photo");
-            }else{
-	            var fileBlob = new Blob(
-	                    [file]
-	                    , {
-	                               type: vImageType
-	                               , name: "1.jpg"//file.name.replace(/^[a-zA-Z0-9]/g,"0")
-	            });
-	            formData.append("file", fileBlob);
-	            formData.append("category", "photo");
-            	formData.append("albumid", goParam.album);
-            }
-            formData.append("ck", goParam.ck);
-            formData.append("upload_auth_token", goParam.token);
-
-            xhr.load = function(e) {
-                console.log("xhr.port2addphoto_draft:" + e);
-            };
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {//服务器正常响应
-                        console.log("var picObj=" + xhr.responseText + "");
-                        eval("var picObj=" + xhr.responseText + "");
-                        console.log(picObj.r);
-                        if (picObj.r!='0' && !picObj.id) {
-                            //文件上传失败，要重试
-                            console.log("上传失败，不重试");
-                            return;
-                        }
-                        aoUploadParam.id=picObj.id;
-                        aoUploadParam.url=picObj.url;
-                        if("DOUBAN_GUANGBO"==gQueryParam.album){
-                        	post_guangbo(aoUploadParam);
-                        }else{
-                            console.log("aoUploadParam:"+aoUploadParam);
-                        	add_desc_save(aoUploadParam);		
-                            console.log("aoUploadParam:"+aoUploadParam);
-                        }
-                        
-                        
-                    } else {//服务器无正常响应，重试
-                        console.log("xhr.status:" + xhr.status + " 暂时 不 重试");
-                        //uploadPic(aoUploadParam);
-                        return;
-                    }
-                } else {
-                    console.log("xhr.readyState:" + xhr.readyState);
-                }
-            };
-
-            xhr.send(formData);
-        }, fileEntryFileError);
-    }//
-    , updateLoadPicErrorHandler//
-            );//end getFile
-    });
-    console.log("upload pic");
-};
-
-var post_guangbo=function(aoUploadParam){
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://www.douban.com/', true);
-    xhr.multipart = true;
-    var formData = new FormData();
-    formData.append("uploaded", aoUploadParam.url);
-    formData.append("ck", goParam.ck);
-    formData.append("comment", decodeURIComponent(gQueryParam["src_url"]));
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {//服务器正常响应
-            	window.location.href="https://www.douban.com/";
-            } else {//服务器无正常响应，重试
-                console.log("post_guangbo xhr.status:" + xhr.status + " 重试");
-                return;
-            }
-        } else {
-            console.log("post_guangbo xhr.readyState:" + xhr.readyState);
-        }
-    };
-    xhr.send(formData);
-}
-
-/*
- * 从浏览器的文件系统中读取图片文件，然后上传。
- * @param {type} file
- * @returns {undefined}
- */
-var fileEntryFile = function(file) {
-    //var formData = new FormData(document.getElementById('uploader-form'));
-    var formData = new FormData();
-    var fileReader = new FileReader();
-
-    console.log('fileReader.onloadend');
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://www.douban.com/j/photos/addphoto_draft', true);
-    console.log('open addphoto_draft');
-
-    xhr.multipart = true;
-    var fileBlob = new Blob([file], {type: "image/jpeg", name: file.name});
-    formData.append("file", fileBlob);
-    formData.append("category", "photo");
-    formData.append("ck", goParam.ck);
-    formData.append("upload_auth_token", goParam.token);
-    formData.append("albumid", goParam.album);
-
-    xhr.load = function(e) {
-        console.log("xhr.port2addphoto_draft:" + e);
-    };
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {//服务器正常响应
-                console.log("var picObj=" + xhr.responseText + "");
-                eval("var picObj=" + xhr.responseText + "");
-                if (!picObj.id) {
-                    //文件上传失败，要重试
-                    console.log("上传失败，重试");
-                    fileEntryFile(file);
-                    return;
-                }
-                add_desc_save(picObj);
-            } else {//服务器无正常响应，重试
-                console.log("xhr.status:" + xhr.status + " 重试");
-                fileEntryFile(file);
-                return;
-            }
-        } else {
-            console.log("xhr.readyState:" + xhr.readyState);
-        }
-    };
-
-    xhr.send(formData);
-};
-
+window.goParam = {};
 
 /**
  * 从页面中获取发帖人的信息。返回一个字符串，包含发帖人的主页地址，以及当前的名称。
@@ -432,103 +199,6 @@ console.log(get_poster_people_id());
  */
 var gLastAoParam=null;
 
-function filterEmoji(text){
-    var ranges = [
-            '\ud83c[\udf00-\udfff]', 
-            '\ud83d[\udc00-\ude4f]', 
-            '\ud83d[\ude80-\udeff]'
-        ];
-    return text.replace(new RegExp(ranges.join('|'), 'g'), '?');
-}
-
-/**
- 在成功调用addphoto_draft后，为图片增加描述，然后保存
-@param aoParam
- */
-var add_desc_save = function(aoParam) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://www.douban.com/photos/album/' + goParam.album + "/upload", true);
-    var desc=window.location.origin +window.location.pathname+" "+aoParam.src+" ID:"+get_poster_people_id()+" "+gQueryParam["src_url"];
-
-    if(is_photos_album_upload(window.location.pathname)){
-        desc=decodeURIComponent(gQueryParam["src_url"]);
-        console.log("desc:"+desc);
-    }
-    desc=desc.replace(/www\./g,'');
-
-    console.log("desc:" + desc);
-    var formData = new FormData();
-    formData.append("ck", goParam.ck);
-    formData.append("desc_" + aoParam.id, desc);
-
-    var a=document.createElement('a'); 
-    a.href=decodeURIComponent(gQueryParam["src_url"]);
-    var tags=a.hostname;
-
-    if(gQueryParam["tags"]){
-        tags=tags+","+decodeURIComponent(gQueryParam["tags"]);
-    }
-
-    if( gRightMenuAlbumList[aoParam.id] && (-1!=gRightMenuAlbumList[aoParam.id].name.indexOf("随便"))) {
-        //随便抓取的页面不加作者标签
-    }else{
-        if(gQueryParam["author"]){
-            console.log("author:"+decodeURIComponent(gQueryParam["author"])+"---"+gQueryParam["author"]);
-            var author=filterEmoji(decodeURIComponent(gQueryParam["author"]));
-            console.log("author:"+decodeURIComponent(gQueryParam["author"])+"---"+author);
-            tags=tags+","+author;
-        }
-    }
-
-    if(0==tags.indexOf(",")){
-        tags=tags.substring(1);
-    }
-    formData.append("tags_" + aoParam.id, tags);    
-    goParam.photo_id=aoParam.id;
-    console.log("desc:" + desc);
-    xhr.onreadystatechange = function() {
-        console.log("desc:" + desc);
-        
-        //window.location.replace('https://www.douban.com/photos/photo/'+aoParam.id);
-        //return ;
-        console.log("xhr.readyState:"+xhr.readyState);
-        console.log("xhr.status:"+xhr.status);
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log("add_desc_save OK");
-            clicked_button.innerHTML = "SAVING";
-            
-            
-            aoParam.comment = desc;
-            var url_prefix=" https://www.douban.com/photos/photo/";
-            
-            var url_suffix="/ \n";
-           
-            if(null===gLastAoParam){
-               gLastAoParam=get_poem_prefix()+"\n 【时光机】\nSRC: "+document.title+" https://"+window.location.hostname+window.location.pathname+"\n TO: \n";//
-            }
-            gLastAoParam=gLastAoParam+url_prefix+aoParam.id+url_suffix+"\n";
-
-            if (null !== add_desc_save_callback) {
-                //如果有指定回调句柄，那么就执行这个函数
-                //add_desc_save_callback();
-            } else {
-                return;
-            }
-        }else if(xhr.status === 301 || xhr.status === 302 || xhr.status === 0 ){
-            window.location.replace('https://www.douban.com/photos/photo/'+aoParam.id);
-        }
-        
-
-        console.log("desc:" + desc);
-    };
-    console.log("desc:" + desc);
-    try{
-        xhr.send(formData);
-    }catch(e){
-        window.location.replace('https://www.douban.com/photos/album/' + goParam.album);
-    }
-    console.log("desc:" + desc);
-};
 
 var poem_list=[
     "大江东去浪淘尽，千古风流人物，故垒西边人道是，三国周郎赤壁。《念奴娇 赤壁怀古》 苏轼"
@@ -708,62 +378,6 @@ var add_comment = function(aoParam) {
 };
 
 
-var fileEntryFileError = function(e) {
-    console.log('fileEntryFileError failed [name:' + e.name + "][message:" + e.message + "]");
-    errorHandler(e);
-};
-
-var writeFile = function(fileEntry) {
-
-    fileEntry.createWriter(function(writer) {
-
-        writer.onwrite = function(e) {
-        };
-        writer.onerror = function(e) {
-        };
-
-        var blob = new Blob([xhr.response], {type: 'image/jpg'});
-
-        writer.write(blob);
-
-    }, writeFileErrorHandler);
-};
-
-/*
- 从asPath中，得到文件名
- */
-var getFileName = function(asPath) {
-    console.log("asPath:" + asPath);
-    var pieces = asPath.split("/");
-    var fname = pieces[pieces.length - 1];
-    console.log("fname:" + fname);
-    return fname;
-};
-
-var updateLoadPicErrorHandler = function(e) {
-    console.log(e);
-    console.log('Open file system failed [name:' + e.name + "][message:" + e.message + "]");
-    errorHandler(e);
-};
-var writeFileErrorHandler = function(e) {
-    console.log('Open file system failed [name:' + e.name + "][message:" + e.message + "]");
-    errorHandler(e);
-};
-var getFileErrorHandler = function(e) {
-    console.log('Open file system failed [name:' + e.name + "][message:" + e.message + "]");
-    errorHandler(e);
-};
-var requestFileSystemErrHandler = function(e) {
-    console.log('Open file system failed [name:' + e.name + "][message:" + e.message + "]");
-    errorHandler(e);
-};
-/*
- 文件系统请求失败的回调函数
- */
-var errorHandler = function(e) {
-    console.log('Open file system failed [name:' + e.name + "][message:" + e.message + "]");
-    throw e;
-};
 //导入CSS
 function ImportCSS() {
     var jqueryScriptBlock = document.createElement('style');
@@ -1156,57 +770,9 @@ if (/.*likes\/topic\//.test(window.location.pathname)) {
 $("textarea[name='rv_comment']").attr("rows",20);
 
 
-/*
- * 
- */
-var upload_other_site_pic=function(){
-    var dlObj = {src: decodeURIComponent(gQueryParam["img_url"]), index: -1,fileName:decodeURIComponent(gQueryParam["fileName"])};
-    goParam.album=gQueryParam["album"];
-    downloadFirst(dlObj);
-    gLastAoParam="\n"+get_poem_prefix()+"\n"+decodeURIComponent(gQueryParam["img_url"])+"\n"+decodeURIComponent(gQueryParam["src_url"]);
-    if(goParam.album==="132826841"||
-        goParam.album==="131036381"
-        ){
-        console.log("no group comment");
-    }else{
-        add_comment_to_group_topic(function(){
-            console.log("upload_other_site_pic add_comment_to_group_topic");
-        });    
-    }
-    
-
-};
-
-var upload_other_site_pic_callback=function(){
-    if(goParam.photo_id){
-       	setTimeout("window.location.href='https://www.douban.com/photos/photo/"+goParam.photo_id+"/'",1*1000);    
-    }else{
-      	setTimeout("window.location.href='https://www.douban.com/photos/album/"+gQueryParam["album"]+"/'",1*1000);    
-    }
-    
-};
 var auto_upload_other_site_pic_to_album=function(){
     //真正的代码其实从后面的if开始的，这里定义个函数，只是为了方便导航定位。
 };
-if(is_photos_album_upload(window.location.pathname)){
-    console.log("photos_album_upload");
-    if("true"===gQueryParam["auto_upload"]
-        && gQueryParam["img_url"]
-        && gQueryParam["album"]
-    ){
-        goParam.album=gQueryParam["album"];
-        console.log("准备自动上传");
-        $("div.uploader-button").css({"height":"500px","width":"600px","background":"url() no-repeat 0 0"});
-        $("div.uploader-button").html("自动上传中....<br/>"
-            +"原链接：<a href='"+decodeURIComponent(gQueryParam["src_url"])+"' target='_blank'>"+decodeURIComponent(gQueryParam["src_url"])+"</a><br/><br/>"
-            +"图片链接：<a href='"+decodeURIComponent(gQueryParam["img_url"])+"' target='_blank'>"+decodeURIComponent(gQueryParam["img_url"])+"</a><br/><br/>"
-            +"<img src='"+decodeURIComponent(gQueryParam["img_url"])+"'/>");
-        $("p.uploader-tips").hide();
-        get_page(upload_other_site_pic);
-        add_desc_save_callback=upload_other_site_pic_callback;
-    }
-}
-
 
 
 var auto_submit_group_topic_comment=function(){
@@ -1293,7 +859,7 @@ var methodManager={
     ,call_downloadFirst:function(request,sender,sendResponse){
         console.log("recv msg call_downloadFirst:request ");
         console.log(request);
-        var dlObj = {src: request.img_url, index: -1};
+        var dlObj = request;
         console.log(dlObj);
         downloadFirst(dlObj,function(aoParam){
             console.log("downloadFirst callback param");
@@ -1347,6 +913,7 @@ var methodManager={
         if(window.location.hostname.indexOf('weibo.com')>-1){
             console.log("under weibo.com");
             var retObj=get_weibo_detail_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
@@ -1354,18 +921,32 @@ var methodManager={
         }else if(window.location.hostname.indexOf('zhihu.com')>-1){
             console.log("under zhihu.com");
             var retObj=get_zhihu_answer_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
+            }
+            if(retObj.title){
+                response.title=retObj.title;
             }
         }else if(window.location.hostname.indexOf('douban.com')>-1 ){
             console.log("under douban.com index");
             var retObj=get_douban_status_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
             }
-        } else{
+        }else if(window.location.hostname.indexOf('twitter.com')>-1 ){
+            console.log("twitter.com");
+            var retObj=get_twitter_detail_link(request);
+            response=retObj;
+            response.pageUrl=retObj.link;
+            if(retObj.author){
+                response.author=retObj.author;
+            }
+        }
+        else{
             console.log("域名未知");
             response.pageUrl=window.location.href;
          //   return ;
@@ -1375,117 +956,6 @@ var methodManager={
         sendResponse(response);
     }//end call call_get_src_url
 };
-
-var get_zhihu_answer_link=function(aoReq){
-    var retObj={};
-    console.log("get_zhihu_answer_link img src:"+aoReq.img_url);
-    var link=window.location.href;
-    if("zhuanlan.zhihu.com"===window.location.hostname){
-        console.log("专栏详情页");
-        retObj.link=link;
-        return retObj;
-    }
-    var bHasFind=false;
-    var answerBody=$("img[src='"+aoReq.img_url+"']").parents(".zm-item-rich-text");//.parent("div").parent("div");
-    var dataEntryUrl=answerBody.attr("data-entry-url");
-    console.log("data-entry-url "+dataEntryUrl);
-    if(dataEntryUrl){
-        console.log("try to find author");
-        link=dataEntryUrl;
-        if(0==link.indexOf("/")){
-            link=window.location.hostname+link;
-        }        
-        retObj.link=link;
-        retObj.author=answerBody.attr("data-author-name");
-        if(!retObj.author){
-            var author=answerBody.parent().find("a.author-link");
-            if(author){
-                retObj.author=author.html();
-            }
-        }
-        
-        return retObj;    
-    }
-};
-
-var get_douban_status_link=function(aoReq){
-    var retObj={};
-    var link=window.location.href+" "+aoReq.img_url;
-    link=link.replace(/http:\/\/www\./g,'');
-    console.log(link);
-    retObj.link=link;
-
-    if(/^\/.*status\/\d+\/$/.test(window.location.pathname)){//豆瓣广播的详情页
-        author=$("div.text").children("a");
-        if(author){
-            retObj.author=author.html();
-        }
-        return retObj;
-    }else if(/^\/photos\//.test(window.location.pathname)){//豆瓣相册
-        author=$("div.info").children("h1");
-        console.log("author.html:"+author.html());
-        if(author && author.html()){
-            var endIndex=author.html().indexOf("的相册-");
-            retObj.author=author.html().substr(0,endIndex);
-        }
-        return retObj;
-    }
-    else if(/^\/group\/topic\/\d+\/$/.test(window.location.pathname)){//豆瓣小组的帖子
-        console.log("group/topic");
-        link=window.location.href;
-        //找作者
-        var author=$("div.topic-doc").find("span.from").children("a");
-        if(author){
-            retObj.author=author.html();
-        }
-    }else{//豆瓣广播
-        $("img[src='"+aoReq.img_url+"']").each(function(){
-            console.log("find img element");
-            link=$(this).parents("div.bd").find("div.actions").children("span.created_at").find("a").attr("href");
-            author=$(this).parents("div.mod").find("div.text").children("a");
-            if(author){
-                retObj.author=author.html();
-            }
-            return;
-        });
-    }
-    console.log("link:"+link);
-    retObj.link=link;
-
-    return retObj;
-};
-
-var get_weibo_detail_link=function(aoReq){
-    var link=window.location.href;
-    var author="";
-
-    $("img[src='"+aoReq.img_url+"']").each(function(){
-        console.log("不在微博详情页");
-        var WB_feed_expand=$(this).parents("div.WB_feed_expand");
-        if(WB_feed_expand){
-            link=WB_feed_expand.find("a.S_txt2").attr("href");
-            author=WB_feed_expand.find("div.WB_info").find("a.S_txt1").attr("title");
-            console.log("WB_feed_expand link:"+link+" author:"+author);
-        }
-        if(!link || !author)
-        {
-            console.log("ELSE  WB_feed_expand");
-            link=$(this).parents("div.WB_detail").find("div.WB_from").find("a[title]").attr("href");
-            author=$(this).parents("div.WB_detail").find("div.WB_info").find("a.W_f14").html();
-        }
-        return;
-    });
-
-    if(link.indexOf("http://")<0){
-        link=window.location.hostname+link;
-    }
-    console.log("link:"+link);
-    var retObj={};
-    retObj.author=author;
-    retObj.link=link;
-    return retObj;
-};
-
 
 console.log("hello");
 chrome.extension.onRequest.addListener(
@@ -1498,56 +968,6 @@ chrome.extension.onRequest.addListener(
 
 var post_tor_group_topic_page_cnt=6;
 
-var quick_delete_comment=function(){
-    var targ;
-    if (!e) var e = window.event;
-    if (e.target) targ = e.target;
-    else if (e.srcElement) targ = e.srcElement;
-    console.log(targ.name);
-    delete_comment(targ.name);
-};
-
-var delete_comment=function(cid){
-        var formData = new FormData();
-        formData.append("ck", getCookie('ck').replace(/\"/g, ""));
-        formData.append("cid", cid);
-        formData.append("reason", "other_reason");
-        formData.append("other","");
-        formData.append("submit","确定");
-
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            $("li#"+cid).fadeOut("slow");
-        }
-    };
-        if(is_my_group_topic()){
-            xhr.open('POST', window.location.pathname+"remove_comment?cid="+cid, true);
-        }else{
-            xhr.open('POST', "/j/group/topic/"+get_group_topic_id(window.location.pathname)+"/remove_comment?cid="+cid, true);
-        }
-        
-        xhr.send(formData);
-};
-
-var quick_delete_comment_this_page=function(){
-    if(!confirm("删除本页全部回复，所有删除掉的内容，都无法恢复，你确定要这样做吗？")){
-        return;
-    }
-    console.log("准备删除本页全部回复");
-    var all_length=$("div.operation_div").length;
-    var index=0;
-    $("div.operation_div").each(function(){
-        delete_comment($(this).find("a[data-cid]").attr("data-cid"));
-        index++;
-        console.log(index+"::::"+all_length);
-        if(index>=all_length){
-            console.log("准备刷新");
-            //window.location.reload();
-            alert("本页删除完成，请刷新页面");
-        }
-    });
-};
 
 /*
  * 是否为帖子首页。 
@@ -1714,8 +1134,9 @@ var gRightMenuAlbumList={};
  * 在相册索引页面展示全部的右键菜单
  */
 var show_all_right_menu=function(){
-
-  console.log("在我的相册索引页面");
+  if( ! $("div.aside")){
+    return;
+  }
   var _div=document.createElement("div");
   _div.innerHTML="<h2>右键菜单</h2>";
   _div.className="mod";
@@ -1766,7 +1187,10 @@ var show_all_right_menu=function(){
     
 };
 
-show_all_right_menu();
+if("www.douban.com"==window.location.hostname){
+    show_all_right_menu();
+}
+
 
 
 var hide_group_intro=function(){
@@ -1980,3 +1404,141 @@ if(is_photos_photo()){
     });
 }
 
+
+if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com")>-1){
+    var __expand_all=function(){
+        $("div.status-wrapper").show();
+    }
+    var _a=document.createElement("a");
+    _a.innerHTML="展开全部";
+    _a.href="javascript:void(0)";
+    _a.style.cssText="right:70px;position:absolute;top:-24px;line-height:1.2";
+    _a.addEventListener('click',__expand_all);
+    $("div.hd")[0].appendChild(_a);
+
+
+    $("li.isay-pic").find("a").unbind();
+    $("li.isay-pic").find("a").attr("href","https://www.douban.com/mine/photos");
+
+
+    /*
+    $(this).find("div.status-item").attr("data-target-type")
+    + sns 广播
+    + movie 电影
+    + rec 推荐
+    + site 小站
+    + "" 转播？？  --  refresh
+
+
+    
+    $(this).find("div.status-item").attr("data-object-kind")
+    + 1000 关注了新成员
+    + 1001 图书
+    + 1018 广播
+    + 1002 想看
+    + 1022 推荐网页
+    + 1025 推荐相册中的照片
+    + 1026 推荐相册
+    + 1013 小组话题
+    + 1015 日记
+    + 1060 添加豆列
+    + 2001 参加线上活动
+    + 3043 豆瓣FM
+    */
+    var forbidShowUserNameStatusConfig={//
+        //data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
+        //林夕 小组话题推荐
+        "133431218":"-1013"
+        //文森  全部
+        ,"115947384":"-ALL"
+        //小蘑菇
+        ,"58404341":"-ALL"
+        //
+        ,"61296149":"-ALL"
+        //
+        ,"my774880647":"-ALL"
+        ,"1957950815":"-ALL"
+        ,"125837622":"-ALL"
+        ,"115970827":"-ALL"
+        ,"57425095":"-ALL"
+        ,"50012669":"-1000;"
+        ,"lemonhall2016":"-1000;-1001;-1022;-1060"
+        //dearbear
+        ,"1687784":"-ALL"
+    };
+
+    var bHideStatus=function(data_uid,data_target_type,data_object_kind){
+        if(!forbidShowUserNameStatusConfig[data_uid]){
+            return false;
+        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf("+"+data_object_kind) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("+"+data_target_type) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("+"+"ALL")//
+        )//end if
+        {
+            return false;
+        }else if(-1!=forbidShowUserNameStatusConfig[data_uid].indexOf("-"+data_object_kind) //
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("-"+data_target_type)//
+            || -1!==forbidShowUserNameStatusConfig[data_uid].indexOf("-"+"ALL")//
+        )//end if
+        {
+            return true;
+        }
+        return false;
+    }
+    var get_data_uid_from_href=function(_href){
+        _href=_href.substring(0,_href.length-1)
+        return _href.substring(_href.lastIndexOf("/")+1);
+    }
+    //首页里面，屏蔽某个人的广播。
+    $("div.new-status").each(function(){
+        var _status=$(this).find("div.status-item");
+        var posterName=_status.find("a.lnk-people").html();
+        var posterHref=_status.find("a.lnk-people").attr("href");
+        //var data_uid=_status.attr("data-uid");
+        var data_uid=get_data_uid_from_href(posterHref);
+        var postType=_status.attr("data-target-type");
+        var objectKind=_status.attr("data-object-kind");
+        if(postType==""){
+            postType="refresh";
+        }
+        if(!bHideStatus(data_uid,postType,objectKind)){
+            //无配置，打开的。
+            console.log("show posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+        }else {
+            //如果配置了，我不想看到这个人的状态。
+            $(this).hide();
+            console.log("hide posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+        }
+
+        //如果是转播
+        _href=$(this).find("span.reshared_by").find("a").attr("href");
+        if(-1!=$(this).attr("class").indexOf("status-reshared-wrapper") || _href){
+            console.log("this is refresh");
+            postType="refresh";
+            if(!_href){
+                _href=$(this).find("div.reshared_hd").attr("data-status-url");
+            }
+            data_uid=get_data_uid_from_href(_href);
+            if(!bHideStatus(data_uid,postType,objectKind)){
+                //无配置，打开的。
+                console.log("show posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+            }else {
+                //如果配置了，我不想看到这个人的状态。
+                $(this).hide();
+                console.log("hide posterName:"+posterName+",postType:"+postType+",objectKind:"+objectKind+",data_uid:"+data_uid);
+            }
+        }//end span.reshared_by
+    });//end $("div.new-status").each(function())
+
+
+}
+
+
+
+
+//分享你大爷
+if(is_group_topic()){
+    $("div.sharing").hide();    
+}
+
+$("div.top-nav-doubanapp").hide();

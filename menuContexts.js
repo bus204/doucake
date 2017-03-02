@@ -47,6 +47,7 @@ function saveImg(info, tab){
    if(!/.*zhihu.com/.test(a.hostname)
    &&!/.*weibo.com/.test(a.hostname)
    &&!/www.douban.com/.test(a.hostname)
+   &&!/twitter.com/.test(a.hostname)
     ){
        open_up_load_page(info,tab);
        return;
@@ -57,6 +58,7 @@ function saveImg(info, tab){
             method:"call_get_src_url"
             ,img_url:info.srcUrl
             ,pageUrl:info.pageUrl
+            ,albumid:info.menuItemId
         }
         ,function(response){
             console.log("sendRequest callback");
@@ -77,7 +79,7 @@ var open_douban_guangbo_page=function(info,tab,response){
     var url="https://www.douban.com/";
     url=url+"?auto_upload=true"//            
             +"&img_url="+encodeURIComponent(img_src_url)
-            +"&title="+encodeURIComponent(tab.title)
+            +"&title="+encodeURIComponent(response.title?response.title:tab.title)
             +"&album="+encodeURIComponent(info.menuItemId);
             if(response && response.pageUrl){
                 url=url+"&src_url="+encodeURIComponent((response.pageUrl.indexOf("http")==0?"":"https://")+response.pageUrl);
@@ -103,7 +105,7 @@ var open_up_load_page=function(info,tab,response){
         try{
             var myArr=/.*\/p(\d+).*/.exec(img_src_url);
             if(myArr && myArr.length>0){
-                pageUrl="www.douban.com/photos/photo/"+myArr[1]+"/";
+                pageUrl="https://www.douban.com/photos/photo/"+myArr[1]+"/";
             }
         }catch(e){}
     }
@@ -112,7 +114,9 @@ var open_up_load_page=function(info,tab,response){
             +"&img_url="+encodeURIComponent(img_src_url)
             +"&title="+encodeURIComponent(tab.title)
             +"&album="+encodeURIComponent(info.menuItemId);
+    url=url+"&token=92012873:b4de5ab6c7a3bdbddd45f0d1418765c97145fd65"
     url=url+"&src_url="+encodeURIComponent(pageUrl);
+    url=url+"&src_tabid="+tab.id;
     if(response && response.author){
       //把名字中的空格替换掉。
       url=url+"&author="+encodeURIComponent(response.author.replace(/\s+/g,""));  
@@ -155,45 +159,42 @@ function getQueryString(url, name) {
 var album_list=null;
 var attach_album_list = function() {
     chrome.contextMenus.removeAll();
-    
-/*
- * 增加页面上的右键菜单
- */
+    /*
+     * 增加页面上的右键菜单
+     */
     var pid = chrome.contextMenus.create({
-
         "title": "保存到豆瓣",
         "contexts": ["image","selection"]
     }
     , function() {
         console.log("chrome.contextMenus.create");
-        //console.log(Chrome.extension.lastError);
     }
     );
     console.log(window.localStorage.getItem("album_list"));
     var tmp = "album_list=" + window.localStorage.getItem("album_list");
     eval(tmp);
     console.log(JSON.stringify(album_list));
-    /*
-    在第一个位置上，插入一个按钮，发豆瓣广播。
-    */
-        chrome.contextMenus.create(
-                {
-                    "title": "发 豆瓣广播"
-                    , "contexts": ["image"]
-                    , "onclick": saveImg
-                    , "parentId": pid
-                    , "id": _douban_guangbo
-                }
-        );
-        chrome.contextMenus.create(
-                {
-                    "title": "测试用的"
-                    , "contexts": ["selection"]
-                    , "onclick": test_selection
-                    , "parentId": pid
-                    , "id": "_test_selection"
-                }
-        );
+      /*
+      在第一个位置上，插入一个按钮，发豆瓣广播。
+      */
+      chrome.contextMenus.create(
+              {
+                  "title": "发 豆瓣广播"
+                  , "contexts": ["image"]
+                  , "onclick": saveImg
+                  , "parentId": pid
+                  , "id": _douban_guangbo
+              }
+      );
+      chrome.contextMenus.create(
+              {
+                  "title": "测试用的"
+                  , "contexts": ["image","selection"]
+                  , "onclick": saveImg
+                  , "parentId": pid
+                  , "id": "_test_selection"
+              }
+      );
     for (var a in album_list) {
         chrome.contextMenus.create(
                 {
@@ -205,7 +206,8 @@ var attach_album_list = function() {
                 }
         );
     }//end for
-};
+};//end attach_album_list
+
 attach_album_list();
 /*
  * 监听外部的查询和添加
@@ -240,9 +242,33 @@ chrome.runtime.onMessage.addListener(
           if("group_fav_list"===request.method){
              group_fav_list_func(request, sender, sendResponse); 
           }
+
+          if("call_downloadFirst"==request.method){
+            call_downloadFirst(request, sender, sendResponse);
+          }
     }
 );
 var group_fav_list=new Array();
+
+var call_downloadFirst=function(request, sender, sendResponse){
+    console.log(request);
+    var tmpRequest=request;
+    tmpRequest.method="call_downloadFirst";
+    console.log(tmpRequest);
+
+    chrome.tabs.sendRequest(
+        parseInt(request.tabid,10)
+        ,tmpRequest
+        ,function(response){
+            console.log("call_downloadFirst callback");
+            console.log(response);
+            sendResponse(tmpRequest);
+
+            console.log("call_downloadFirst callback  222");
+        }
+    );
+}
+
 var group_fav_list_func=function(request, sender, sendResponse){
     console.log("group_fav_list : "+JSON.stringify(request)); 
     var item=null;
@@ -297,7 +323,7 @@ var add_group_to_fav=function(request, sender, sendResponse){
     if(!group_fav_list){
       group_fav_list=new Array();
     }
-    group_fav_list.push({"group_id":request.group_id,"group_icon":request.group_icon});
+    group_fav_list.unshift({"group_id":request.group_id,"group_icon":request.group_icon});
     sendResponse(item);
     window.localStorage.setItem("group_fav_list",JSON.stringify(group_fav_list));
     console.log(JSON.stringify(group_fav_list));
