@@ -95,7 +95,7 @@ window.get_douban_status_link=function(aoReq){
 window.get_weibo_detail_link=function(aoReq){
     var link=window.location.href;
     var author="";
-
+    var title="";
     $("img[src='"+aoReq.img_url+"']").each(function(){
         console.log("不在微博详情页");
         var WB_feed_expand=$(this).parents("div.WB_feed_expand");
@@ -109,6 +109,7 @@ window.get_weibo_detail_link=function(aoReq){
             console.log("ELSE  WB_feed_expand");
             link=$(this).parents("div.WB_detail").find("div.WB_from").find("a[title]").attr("href");
             author=$(this).parents("div.WB_detail").find("div.WB_info").find("a.W_f14").html();
+            title=author+"的微博:"+$(this).parents("div.WB_detail").find("div.WB_text").text();
         }
         return;
     });
@@ -120,6 +121,7 @@ window.get_weibo_detail_link=function(aoReq){
     var retObj={};
     retObj.author=author;
     retObj.link=link;
+    retObj.title=title;
     return retObj;
 };
 
@@ -144,6 +146,7 @@ window.get_zhihu_answer_link=function(aoReq){
     if("zhuanlan.zhihu.com"===window.location.hostname){
         console.log("专栏详情页");
         retObj.link=link;
+        retObj.title=document.title;
         return retObj;
     }
     var bHasFind=false;
@@ -165,7 +168,8 @@ window.get_zhihu_answer_link=function(aoReq){
                     retObj.author=author.html();
                 }
             }
-            
+            retObj.title=answerBody.parents("div .feed-main").find("h2").find("a").text();
+            console.log(retObj);
             return retObj;    
         }
     }
@@ -179,7 +183,7 @@ window.get_zhihu_answer_link=function(aoReq){
             }
             retObj.link=link;
         }
-        var authorElem=answerBody.find("a.UserLink-link");
+        var authorElem=answerBody.find("div .AuthorInfo-name").find("a.UserLink-link");
         retObj.author=authorElem.text();    
         return retObj;
     }

@@ -913,6 +913,7 @@ var methodManager={
         if(window.location.hostname.indexOf('weibo.com')>-1){
             console.log("under weibo.com");
             var retObj=get_weibo_detail_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
@@ -920,13 +921,18 @@ var methodManager={
         }else if(window.location.hostname.indexOf('zhihu.com')>-1){
             console.log("under zhihu.com");
             var retObj=get_zhihu_answer_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
             }
+            if(retObj.title){
+                response.title=retObj.title;
+            }
         }else if(window.location.hostname.indexOf('douban.com')>-1 ){
             console.log("under douban.com index");
             var retObj=get_douban_status_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
@@ -934,6 +940,7 @@ var methodManager={
         }else if(window.location.hostname.indexOf('twitter.com')>-1 ){
             console.log("twitter.com");
             var retObj=get_twitter_detail_link(request);
+            response=retObj;
             response.pageUrl=retObj.link;
             if(retObj.author){
                 response.author=retObj.author;
@@ -1413,6 +1420,7 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     $("li.isay-pic").find("a").unbind();
     $("li.isay-pic").find("a").attr("href","https://www.douban.com/mine/photos");
 
+
     /*
     $(this).find("div.status-item").attr("data-target-type")
     + sns 广播
@@ -1433,6 +1441,7 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
     + 1026 推荐相册
     + 1013 小组话题
     + 1015 日记
+    + 1060 添加豆列
     + 2001 参加线上活动
     + 3043 豆瓣FM
     */
@@ -1453,7 +1462,9 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
         ,"115970827":"-ALL"
         ,"57425095":"-ALL"
         ,"50012669":"-1000;"
-        ,"lemonhall2016":"-1000;-1001;-1022"
+        ,"lemonhall2016":"-1000;-1001;-1022;-1060"
+        //dearbear
+        ,"1687784":"-ALL"
     };
 
     var bHideStatus=function(data_uid,data_target_type,data_object_kind){
@@ -1521,3 +1532,13 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
 
 
 }
+
+
+
+
+//分享你大爷
+if(is_group_topic()){
+    $("div.sharing").hide();    
+}
+
+$("div.top-nav-doubanapp").hide();

@@ -79,7 +79,7 @@ var open_douban_guangbo_page=function(info,tab,response){
     var url="https://www.douban.com/";
     url=url+"?auto_upload=true"//            
             +"&img_url="+encodeURIComponent(img_src_url)
-            +"&title="+encodeURIComponent(tab.title)
+            +"&title="+encodeURIComponent(response.title?response.title:tab.title)
             +"&album="+encodeURIComponent(info.menuItemId);
             if(response && response.pageUrl){
                 url=url+"&src_url="+encodeURIComponent((response.pageUrl.indexOf("http")==0?"":"https://")+response.pageUrl);
