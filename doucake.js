@@ -1465,6 +1465,7 @@ if("/"==window.location.pathname && window.location.hostname.indexOf("douban.com
         ,"lemonhall2016":"-1000;-1001;-1022;-1060"
         //dearbear
         ,"1687784":"-ALL"
+        ,"park0322":"-ALL"
     };
 
     var bHideStatus=function(data_uid,data_target_type,data_object_kind){

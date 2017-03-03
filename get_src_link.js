@@ -148,6 +148,7 @@ window.get_twitter_detail_link=function(aoReq){
         console.log("find the detail element");
         link="https://twitter.com/"+answerBody.find("small.time").find("a").attr("href");
         retObj.author=answerBody.find("span.username").text();
+        retObj.title=retObj.author+":"+answerBody.find("p.tweet-text").text().replace(/pic.*$/g,"");
     }
     retObj.link=link;
     return retObj;
