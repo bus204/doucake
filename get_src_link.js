@@ -115,7 +115,7 @@ window.get_weibo_detail_link=function(aoReq){
         if(WB_feed_expand){
             link=WB_feed_expand.find("a.S_txt2").attr("href");
             author=WB_feed_expand.find("div.WB_info").find("a.S_txt1").attr("title");
-            title=author+"的微博:"+WB_feed_expand.find("div.WB_text").text();
+            title=author+"的微博:"+WB_feed_expand.find("div.WB_text").text().replace(/\n/g,"").replace(/^\s+/g,"").replace(/\s+$/g,"");;
             console.log("WB_feed_expand link:"+link+" author:"+author);
         }
         if(!link || !author)
@@ -123,7 +123,7 @@ window.get_weibo_detail_link=function(aoReq){
             console.log("ELSE  WB_feed_expand");
             link=$(this).parents("div.WB_detail").find("div.WB_from").find("a[title]").attr("href");
             author=$(this).parents("div.WB_detail").find("div.WB_info").find("a.W_f14").html();
-            title=author+"的微博:"+$(this).parents("div.WB_detail").find("div.WB_text").text().replace(/^\s+/g,"").replace(/\s+$/g,"");
+            title=author+"的微博:"+$(this).parents("div.WB_detail").find("div.WB_text").text().replace(/\n/g,"").replace(/^\s+/g,"").replace(/\s+$/g,"");
         }
         return;
     });
@@ -182,7 +182,7 @@ window.get_zhihu_answer_link=function(aoReq){
                     retObj.author=author.html();
                 }
             }
-            retObj.title=answerBody.parents("div .feed-main").find("h2").find("a").text().replace(/^\s+/g,"").replace(/\s+$/g,"").replace(/\n/g,"");
+            retObj.title=answerBody.parents("div .feed-main").find("h2").find("a").text().replace(/\n/g,"").replace(/^\s+/g,"").replace(/\s+$/g,"");
             console.log(retObj);
             return retObj;    
         }
