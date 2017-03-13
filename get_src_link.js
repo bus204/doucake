@@ -29,7 +29,7 @@ window.get_douban_status_link=function(aoReq){
             retObj.title=document.title;
         }
         if($("div.photo_descri")){
-            retObj.title+=",#漂亮的陌生人# "+$("div.photo_descri").text();
+            retObj.title+=$("div.photo_descri").text();
         }else  if($("span#display")){
             retObj.title=$("span#display").text();
         } 

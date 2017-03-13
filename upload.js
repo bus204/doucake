@@ -161,7 +161,7 @@ window.uploadPic = function(aoUploadParam) {
             console.log('fileReader.onloadend');
             var xhr = new XMLHttpRequest();
             var targetUrl="https://www.douban.com/j/photos/addphoto_draft";
-            if('DOUBAN_GUANGBO'==goParam.album){
+            if('DOUBAN_GUANGBO'==goParam.album || "beauty_stranger"==goParam.album ){
 				targetUrl='https://www.douban.com/j/upload';
             }
             
@@ -169,7 +169,7 @@ window.uploadPic = function(aoUploadParam) {
             console.log('open addphoto_draft targetUrl:'+targetUrl);
 
             xhr.multipart = true;
-            if(gQueryParam.album=="DOUBAN_GUANGBO"){
+            if(gQueryParam.album=="DOUBAN_GUANGBO" || gQueryParam.album=="beauty_stranger"){
             	var fileBlob = new Blob(
 	                    [file]
 	                    , {
@@ -209,7 +209,7 @@ window.uploadPic = function(aoUploadParam) {
                         }
                         aoUploadParam.id=picObj.id;
                         aoUploadParam.url=picObj.url;
-                        if("DOUBAN_GUANGBO"==gQueryParam.album){
+                        if("DOUBAN_GUANGBO"==gQueryParam.album || "beauty_stranger"==gQueryParam.album){
                         	post_guangbo(aoUploadParam);
                         }else{
                             console.log("aoUploadParam:"+aoUploadParam);

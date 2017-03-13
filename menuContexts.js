@@ -4,6 +4,7 @@
  */
 
 var _douban_guangbo="DOUBAN_GUANGBO";
+var _beauty_stranger="beauty_stranger";
 
 function test_selection(info,tab){
   console.log("test_selection");
@@ -66,6 +67,9 @@ function saveImg(info, tab){
             if(_douban_guangbo==info.menuItemId){
               //发广播
               open_douban_guangbo_page(info,tab,response);
+            }else if(_beauty_stranger==info.menuItemId){
+              response.title="#漂亮的陌生人# "+response.title?response.title:tab.title;
+              open_douban_guangbo_page(info,tab,response);
             }else{
               open_up_load_page(info,tab,response);
             }
@@ -75,6 +79,7 @@ function saveImg(info, tab){
 };
 
 var open_douban_guangbo_page=function(info,tab,response){
+    console.log("");
     var img_src_url=info.srcUrl.replace(/http:/g,"https:");
     var url="https://www.douban.com/";
     url=url+"?auto_upload=true"//            
@@ -157,6 +162,9 @@ function getQueryString(url, name) {
 
 
 var album_list=null;
+/**
+ * 鼠标菜单上追加列表。
+ */
 var attach_album_list = function() {
     chrome.contextMenus.removeAll();
     /*
@@ -188,11 +196,11 @@ var attach_album_list = function() {
       );
       chrome.contextMenus.create(
               {
-                  "title": "测试用的"
-                  , "contexts": ["image","selection"]
+                  "title": "#漂亮的陌生人#"
+                  , "contexts": ["image"]
                   , "onclick": saveImg
                   , "parentId": pid
-                  , "id": "_test_selection"
+                  , "id": _beauty_stranger
               }
       );
     for (var a in album_list) {
