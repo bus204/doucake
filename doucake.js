@@ -107,6 +107,9 @@ var get_page = function (get_page_callback) {
         return;
     }
 
+
+
+
     /*
     访问链接获得
     */
@@ -1135,14 +1138,14 @@ var show_all_right_menu = function () {
     var _all_right_menu_list = document.getElementById("_all_right_menu_list");
     if (_all_right_menu_list) {
         var _ul = document.getElementById("_all_right_menu_ul");
-        _ul.innerHTML="";
+        _ul.innerHTML = "";
     } else {
         var _div = document.createElement("div");
         _div.innerHTML = "<h2>右键菜单</h2>";
         _div.className = "mod";
         _div.id = "_all_right_menu_list";
         var _ul = document.createElement("ul");
-        _ul.id="_all_right_menu_ul";
+        _ul.id = "_all_right_menu_ul";
         _ul.className = "mbt";
         _div.appendChild(_ul);
         $("div.aside")[0].insertBefore(_div, $("div.mod")[0]);
@@ -1189,7 +1192,10 @@ var show_all_right_menu = function () {
 
 };
 
-if ("www.douban.com" == window.location.hostname) {
+if ("www.douban.com" == window.location.hostname //
+    && $("a.lnk-create").length>0 //
+    && window.location.href.indexOf("group") == -1) {
+    console.log("show_all_right_menu");
     show_all_right_menu();
 }
 
