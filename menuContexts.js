@@ -69,7 +69,7 @@ function saveImg(info, tab){
               open_douban_guangbo_page(info,tab,response);
             }else if(_beauty_stranger==info.menuItemId){
               var tmpObj=response;
-              tmpObj.title="#漂亮的陌生人# "+(response.title?response.title:tab.title);
+              tmpObj.title=" _#漂亮的陌生人# "+(response.title?response.title:tab.title);
               console.log("response.title: "+tmpObj.title);
               open_douban_guangbo_page(info,tab,tmpObj);
             }else{

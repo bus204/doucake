@@ -245,7 +245,7 @@ window.post_guangbo=function(aoUploadParam){
     var formData = new FormData();
     formData.append("uploaded", aoUploadParam.url);
     formData.append("ck", goParam.ck);
-    formData.append("comment", decodeURIComponent(gQueryParam["src_url"])+" "+decodeURIComponent(gQueryParam["title"]));
+    formData.append("comment", decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g,"")+" "+decodeURIComponent(gQueryParam["title"]));
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
