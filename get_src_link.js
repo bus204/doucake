@@ -13,6 +13,9 @@ window.get_douban_status_link=function(aoReq){
         if(author){
             retObj.author=retObj.author+","+author.html();
         }
+        if(!retObj.title){
+            retObj.title=$("div.status-saying").text().replace(/\n/g,"").replace(/^\s+/g,"").replace(/\s+$/g,"");;
+        }
     }else if(/^\/photos\/photo\//.test(window.location.pathname)){//豆瓣相册相片
         console.log("豆瓣相册相片");
         var _mod=$("div.mod-usercard");
@@ -31,7 +34,7 @@ window.get_douban_status_link=function(aoReq){
         if($("div.photo_descri")){
             retObj.title+=$("div.photo_descri").text();
         }else  if($("span#display")){
-            retObj.title=$("span#display").text();
+            retObj.title=$("span#display").text().replace(/\n/g,"").replace(/^\s+/g,"").replace(/\s+$/g,"");;
         } 
         
         console.log(retObj);
@@ -67,9 +70,6 @@ window.get_douban_status_link=function(aoReq){
             douban_uid=douban_uid.substring(douban_uid.lastIndexOf("/")+1);
             retObj.author=author.html()+","+douban_uid;
         }
-        if(!retObj.title){
-            retObj.title=" #漂亮的陌生人# "+document.title;
-        }
     }else{//豆瓣广播
         $("img[src='"+aoReq.img_url+"']").each(function(){
             console.log("find img element");
@@ -83,6 +83,9 @@ window.get_douban_status_link=function(aoReq){
             author=$(this).parents("div.mod").find("div.text").children("a");
             if(author){
                 retObj.author=retObj.author+","+author.html();
+            }
+            if(!retObj.title){
+                retObj.title=$(this).parents("div.status-item").find("div.status-saying").text();
             }
             return;
         });//end img[src='"+aoReq.img_url+"']").each(function(){

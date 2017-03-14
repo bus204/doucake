@@ -68,8 +68,10 @@ function saveImg(info, tab){
               //发广播
               open_douban_guangbo_page(info,tab,response);
             }else if(_beauty_stranger==info.menuItemId){
-              response.title="#漂亮的陌生人# "+response.title?response.title:tab.title;
-              open_douban_guangbo_page(info,tab,response);
+              var tmpObj=response;
+              tmpObj.title="#漂亮的陌生人# "+(response.title?response.title:tab.title);
+              console.log("response.title: "+tmpObj.title);
+              open_douban_guangbo_page(info,tab,tmpObj);
             }else{
               open_up_load_page(info,tab,response);
             }
