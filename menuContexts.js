@@ -45,14 +45,15 @@ function saveImg(info, tab){
    a.href=info.pageUrl;
    console.log(a);
    console.log(a.hostname);
-   if(!/.*zhihu.com/.test(a.hostname)
-   &&!/.*weibo.com/.test(a.hostname)
-   &&!/www.douban.com/.test(a.hostname)
-   &&!/twitter.com/.test(a.hostname)
-    ){
-       open_up_load_page(info,tab);
-       return;
-   }
+   //这段被注释掉的逻辑的是基于什么的考虑？
+//    if(!/.*zhihu.com/.test(a.hostname)
+//    &&!/.*weibo.com/.test(a.hostname)
+//    &&!/www.douban.com/.test(a.hostname)
+//    &&!/twitter.com/.test(a.hostname)
+//     ){
+//        open_up_load_page(info,tab);
+//        return;
+//    }
     chrome.tabs.sendRequest(
         tab.id,
         {
