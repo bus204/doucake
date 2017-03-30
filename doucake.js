@@ -4,14 +4,12 @@ console.log(window.location);
 
 
 /*
-	全局的URL参数对象
-	*/
+ * 全局的URL参数对象
+ */
 var gQueryParam = parseQueryString(window.location.search);
 
 /*
- * 相册的索引页面
- * @param {type} pathname
- * @returns {undefined}
+ * 相册的索引页面 @param {type} pathname @returns {undefined}
  */
 var is_photos_album_index = function (pathname) {
     return /\/people\/.*?\/photos/.test(pathname) && $("span.btn-pic-upload").length > 1;
@@ -70,15 +68,15 @@ function parseQueryString(vhref) {
 window.parseQueryString = parseQueryString;
 
 /**
- 打开upload页面，得到upload_token
+ * 打开upload页面，得到upload_token
  */
 var get_page = function (get_page_callback) {
     console.log("get_page");
     var gQueryParam = parseQueryString(window.location.search);
     console.log(gQueryParam);
     /*
-    如果入参中，已经包含了token和ck参数，那么就不需要再去获取，直接从链接的参数中获得。
-    */
+	 * 如果入参中，已经包含了token和ck参数，那么就不需要再去获取，直接从链接的参数中获得。
+	 */
     if (gQueryParam['ck'] !== '' && undefined !== gQueryParam['ck'] &&
         gQueryParam['token'] !== '' && gQueryParam['token'] !== undefined
         && '' !== getCookie('token')
@@ -111,8 +109,8 @@ var get_page = function (get_page_callback) {
 
 
     /*
-    访问链接获得
-    */
+	 * 访问链接获得
+	 */
     var xhr = new XMLHttpRequest();
     if (goParam.album == "DOUBAN_GUANGBO" || goParam.album == "beauty_stranger") {
         xhr.open('get', 'https://www.douban.com/', true);
@@ -122,7 +120,7 @@ var get_page = function (get_page_callback) {
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            if (xhr.status === 200) {//服务器正常响应
+            if (xhr.status === 200) {// 服务器正常响应
                 var re = /.*?UPLOAD_AUTH_TOKEN.*?\'(.*)\';/g;
                 arr = re.exec(xhr.responseText);
                 console.log(
@@ -130,14 +128,14 @@ var get_page = function (get_page_callback) {
                 );
                 goParam.token = arr[1];
                 console.log("token:" + goParam.token);
-                //调用回调函数
+                // 调用回调函数
                 get_page_callback();
-            }//200
+            }// 200
             else {
                 console.log("get_page失败了，要重试，刷新");
-                //setTimeout('window.location.href=window.location.href;',5);
+                // setTimeout('window.location.href=window.location.href;',5);
             }
-        }//state==4
+        }// state==4
     };
     console.log("requset upload page to get UPLOAD_AUTH_TOKEN");
     var formData = new FormData();
@@ -145,24 +143,22 @@ var get_page = function (get_page_callback) {
 };
 window.get_page = get_page;
 /*
- Just say Hello
+ * Just say Hello
  */
 var HelloDouban = function () {
     console.log("ganxious.douban. Hello:" + get_dou_uid());
 };
 
 /*
- 需要上传的目标的文件属性
- 
- goParam.album   豆瓣相册的ID
- goParam.path    待上传文件的路径
- goParam.desc    待上传文件的描述
+ * 需要上传的目标的文件属性
+ * 
+ * goParam.album 豆瓣相册的ID goParam.path 待上传文件的路径 goParam.desc 待上传文件的描述
  */
 window.goParam = {};
 
 /**
- * 从页面中获取发帖人的信息。返回一个字符串，包含发帖人的主页地址，以及当前的名称。
- * 主页地址和名称之间，使用空格分隔
+ * 从页面中获取发帖人的信息。返回一个字符串，包含发帖人的主页地址，以及当前的名称。 主页地址和名称之间，使用空格分隔
+ * 
  * @returns {undefined}
  */
 var get_poster = function () {
@@ -175,7 +171,7 @@ var get_poster = function () {
     }
     return poster;
 };
-//console.log("poster:"+get_poster());
+// console.log("poster:"+get_poster());
 
 var get_poster_people_id = function () {
     var poster = "";
@@ -190,8 +186,7 @@ var get_poster_people_id = function () {
 console.log(get_poster_people_id());
 
 /*
- * 上一次上传成功的照片。
- * @type aoParam
+ * 上一次上传成功的照片。 @type aoParam
  */
 var gLastAoParam = null;
 
@@ -243,13 +238,14 @@ var jayzhou = [
 ];
 /**
  * 返回一个随机的诗歌、明言的开头。
+ * 
  * @returns {undefined}
  */
 var get_poem_prefix = function () {
     var target_list = poem_list.concat(jayzhou);
 
     var tid = get_group_topic_id();
-    //return target_list[ (new Date()).valueOf() % target_list.length];
+    // return target_list[ (new Date()).valueOf() % target_list.length];
     return target_list[Math.floor(Math.random() * 10000) % target_list.length];
 };
 
@@ -268,21 +264,17 @@ var get_item_id = function (url) {
 
 /*
  * add_desc_save_callback 一个回调函数的句柄，在add_desc_save完成后，调用该句柄。该句柄暂时不接收任何的参数。
- * 所以只能依赖全部变量。
- * 该句柄默认情况下为null
- * @param {type} aoParam
- * @returns {undefined}
+ * 所以只能依赖全部变量。 该句柄默认情况下为null @param {type} aoParam @returns {undefined}
  */
 var add_desc_save_callback = null;
 /*
- * 在相册页面中，保存成功后的回调函数
- * @returns {undefined}
+ * 在相册页面中，保存成功后的回调函数 @returns {undefined}
  */
 var photos_photo_add_desc_save_callback = function () {
-    //标记为喜欢add_comment_to_group_topic
+    // 标记为喜欢add_comment_to_group_topic
     like(function () {
 
-        //clicked_button.removeEventListener('click', clicked_function);
+        // clicked_button.removeEventListener('click', clicked_function);
         clicked_button.innerHTML = "<a href='https://www.douban.com/photos/album/" + goParam.album + "/' target=_blank>查看</a>";
     });
 
@@ -314,21 +306,20 @@ var like = function (func) {
     xhr.send(formData);
 };
 /*
- * 在小组话题页面中，保存成功后，需要做下面的处理。
- * @returns {undefined}
+ * 在小组话题页面中，保存成功后，需要做下面的处理。 @returns {undefined}
  */
 var group_topic_add_desc_save_callback = function () {
     /*
-     小组话题内游标+1，处理下一张照片
-     */
+	 * 小组话题内游标+1，处理下一张照片
+	 */
     g_index = g_index + 1;
     save_single_pic(g_index);
 };
 
 var status_add_desc_save_callback = function () {
     /*
- 小组话题内游标+1，处理下一张照片
- */
+	 * 小组话题内游标+1，处理下一张照片
+	 */
     g_index = g_index + 1;
     save_status_single_pic(g_index);
 };
@@ -336,13 +327,13 @@ var status_add_desc_save_callback = function () {
 if (
     /.*\/photos\/photo\/.*/.test(window.location.pathname)
 ) {
-    //在相册页面
+    // 在相册页面
     console.log("在相册页面");
     add_desc_save_callback = photos_photo_add_desc_save_callback;
 } else if (
     /.*\/group\/topic\/.*/.test(window.location.pathname)
 ) {
-    //小组话题页面
+    // 小组话题页面
     console.log("小组话题页面");
     add_desc_save_callback = group_topic_add_desc_save_callback;
 } else if (/.*\/people\/.*\/status\/.*/.test(window.location.pathname)) {
@@ -353,9 +344,7 @@ else {
     console.log("当前页面未知");
 }
 /*
- 向照片增加一条评论
- aoParam.id  照片ID
- aoParam.comment 要添加的评论
+ * 向照片增加一条评论 aoParam.id 照片ID aoParam.comment 要添加的评论
  */
 var add_comment = function (aoParam) {
     var xhr = new XMLHttpRequest();
@@ -370,11 +359,11 @@ var add_comment = function (aoParam) {
             clicked_button.innerHTML = "<a href='https://www.douban.com/photos/photo/" + aoParam.id + "/' target=_blank>查看</a>";
         }
     };
-    //xhr.send(formData);
+    // xhr.send(formData);
 };
 
 
-//导入CSS
+// 导入CSS
 function ImportCSS() {
     var jqueryScriptBlock = document.createElement('style');
     jqueryScriptBlock.type = 'text/css';
@@ -386,14 +375,14 @@ function ImportCSS() {
     jqueryScriptBlock.innerHTML += "#post_to_group_topic div{cursor:pointer;}";
     document.getElementsByTagName('head')[0].appendChild(jqueryScriptBlock);
 }
-//document 全局对象
+// document 全局对象
 var gbody = document.getElementsByTagName("body")[0];
 var newButton = null;
 var savePrivateButton = null;
 var clicked_button = null;
 var clicked_function = null;
 var postButton = null;
-//为页面元素增加按钮
+// 为页面元素增加按钮
 function AddButton() {
     ImportCSS();
     newButton = document.createElement("div");
@@ -406,7 +395,7 @@ function AddButton() {
     gbody.appendChild(newButton);
     clicked_button = newButton;
 
-    //新增一个按钮
+    // 新增一个按钮
     savePrivateButton = document.createElement("div");
     savePrivateButton.id = "save_private";
     var privateDiv = document.createElement("div");
@@ -424,17 +413,18 @@ function AddButton() {
 var save_to_public = function () {
     clicked_button = newButton;
     clicked_function = man_save_photos_to_private;
-    //更新目标相册的ID
+    // 更新目标相册的ID
     goParam.album = "124153766";
     get_page(save_pics_entry);
 };
 /**
  * 页面点击按钮时，手工收藏私有相册
+ * 
  * @returns {undefined}
  */
 var man_save_photos_to_private = function () {
     clicked_button = savePrivateButton;
-    //更新目标相册的ID
+    // 更新目标相册的ID
     goParam.album = "128994584";
     get_page(save_pics_entry);
 };
@@ -464,9 +454,9 @@ var save_photos_photo = function () {
             gLastAoParam = "\n" + get_poem_prefix() + "\n 【时光机】\n";//
             gLastAoParam = gLastAoParam + "\n" + window.location.href + "\n";
         }
-        //gLastAoParam=gLastAoParam+this.src+"\n";
+        // gLastAoParam=gLastAoParam+this.src+"\n";
     });
-    //add_comment_to_group_topic(function(){});
+    // add_comment_to_group_topic(function(){});
 
 };
 
@@ -478,8 +468,7 @@ var save_pics = function () {
 
 
 /*
- * 在状态页面保存图片到相册中。
- * @returns {undefined}
+ * 在状态页面保存图片到相册中。 @returns {undefined}
  */
 var save_status_photo = function () {
     console.log('save_status_photos');
@@ -508,8 +497,7 @@ var save_status_single_pic = function (aiIndex) {
 
 
 /*
- 保存单张照片。
- aiIndex，是其中ID，从0开始。
+ * 保存单张照片。 aiIndex，是其中ID，从0开始。
  */
 var save_single_pic = function (aiIndex) {
     if (aiIndex === -1) {
@@ -525,7 +513,7 @@ var save_single_pic = function (aiIndex) {
         return;
     }
     if (0 === $(".topic-doc img").length) {
-        //没有图片
+        // 没有图片
         console.log("没有图片");
         // unlike();
         add_tags();
@@ -533,9 +521,8 @@ var save_single_pic = function (aiIndex) {
     }
 
     /*
-     * 最后一张照片
-     * @param {type} aiIndex
-     */
+	 * 最后一张照片 @param {type} aiIndex
+	 */
     if (aiIndex >= $(".topic-doc img").length) {
         console.log("save over,number:" + $(".topic-doc img").length);
         clicked_button.innerHTML = "<a href='https://www.douban.com/photos/album/" + goParam.album + "/' target=_blank>查看</a>";
@@ -544,9 +531,8 @@ var save_single_pic = function (aiIndex) {
             add_tags();
         }
         /*
-        2014-05-23 leungma
-        不再提交，等待后续，从相册中，批量提交。
-        */
+		 * 2014-05-23 leungma 不再提交，等待后续，从相册中，批量提交。
+		 */
         add_comment_to_group_topic();
     }
     $(".topic-doc img:eq(" + aiIndex + ")").each(function () {
@@ -570,13 +556,13 @@ var back2Index = function () {
         }
         console.log("backIndex=" + backIndex);
         setTimeout("window.location.href='" + backIndex + "'", //
-            //2 * 1000
+            // 2 * 1000
             4 * 1000
         );
     }
 }
 /*
- 当前页面取消喜欢。
+ * 当前页面取消喜欢。
  */
 var unlike = function () {
     var tmpArray = window.location.pathname.split("/");
@@ -598,7 +584,7 @@ var unlike = function () {
 };
 
 /*
- 为当前页面增加标签
+ * 为当前页面增加标签
  */
 var add_tags = function () {
     var xhr = new XMLHttpRequest();
@@ -625,6 +611,7 @@ var add_tags = function () {
 
 /**
  * 向当前小组话题添加评论。
+ * 
  * @returns {undefined}
  */
 var add_comment_to_group_topic = function (call_back_func) {
@@ -633,8 +620,7 @@ var add_comment_to_group_topic = function (call_back_func) {
 
 
 /*
- 在小组喜欢页面中，依次打开页面。
- 打开的页面中，需要追加参数  auto_save=true
+ * 在小组喜欢页面中，依次打开页面。 打开的页面中，需要追加参数 auto_save=true
  */
 var auto_open_in_group_likes = function () {
     var group_likes_fresh_interval = 10;
@@ -644,12 +630,12 @@ var auto_open_in_group_likes = function () {
         if ($(".title a:eq(0)").length === 0) {
             setTimeout("window.location.href=window.location.href", group_likes_fresh_interval * 1000);
         } else {
-            /*遍历喜欢的条目列表，找到第一个还没有UP标签的条目，并打印日志链接*/
+            /* 遍历喜欢的条目列表，找到第一个还没有UP标签的条目，并打印日志链接 */
             $("ul.fav-list").children("li").each(function () {
-                //console.log("Get Li");
-                /*依次处理每一个喜欢的条目*/
+                // console.log("Get Li");
+                /* 依次处理每一个喜欢的条目 */
                 var target_href = $(this).find("div.title:eq(0)").children("a:eq(0)").attr("href")
-                    //追加目标页面的参数
+                    // 追加目标页面的参数
                     + "?"
                     + "auto_save=true"
                     + "&back_to_index=true&src_index=" + encodeURIComponent(window.location.href)
@@ -660,7 +646,7 @@ var auto_open_in_group_likes = function () {
                     target_href = target_href + "&ck=" + gQueryParam['ck'] + "&token=" + gQueryParam['token'];
                 }
                 var hasTagged = false;
-                /*判断是否有已经指定的标签*/
+                /* 判断是否有已经指定的标签 */
                 $(this).find("p.author-tags").children("a.tag-add").each(function () {
                     var tags = $(this).attr("data-tags").split(",");
                     console.log("has tags:" + $(this).attr("data-tags") + " tags length:" + tags.length);
@@ -681,7 +667,7 @@ var auto_open_in_group_likes = function () {
 
 
                 if (!hasTagged) {
-                    //如果还没有打过指定的标签，那么就打开这个页面
+                    // 如果还没有打过指定的标签，那么就打开这个页面
                     console.log("DEBUG,should OPEN THIS:" + target_href);
                     window.location.href = target_href;
                 } else {
@@ -707,7 +693,7 @@ if (/movie.douban.com/.test(window.location.host)) {
 }
 
 /*
- 从cookies中得到豆瓣的uid。
+ * 从cookies中得到豆瓣的uid。
  */
 var get_dou_uid = function () {
     var tmp = "var tmpObj=" + $("div.global-nav-items").find("li").find("a").attr("data-moreurl-dict");
@@ -733,8 +719,7 @@ if (/.*douban.com/.test(window.location.hostname) && "/share/recommend" !== wind
 
 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 /*
- 如果是豆瓣小组的页面，脚本启动。
- 先展示一个按钮，点击触发动作
+ * 如果是豆瓣小组的页面，脚本启动。 先展示一个按钮，点击触发动作
  */
 if (/.*\/group\/topic\/.*/.test(window.location.pathname)
     || /.*\/photos\/photo\/.*/.test(window.location.pathname)
@@ -742,19 +727,18 @@ if (/.*\/group\/topic\/.*/.test(window.location.pathname)
 ) {
     if (window.location.href.indexOf('auto_save=true') > -1) {
         /*
-         如果链接中有参数auto_save=true，那么就尝试自动保存
-         */
+		 * 如果链接中有参数auto_save=true，那么就尝试自动保存
+		 */
         console.log("auto_save");
         /*
-        在自动保存之前，优先得到token和ck字段
-        得到成功后，再获取。
-        */
+		 * 在自动保存之前，优先得到token和ck字段 得到成功后，再获取。
+		 */
         get_page(save_pics);
     }
 }
 
 /*
- 小组喜欢页
+ * 小组喜欢页
  */
 if (/.*likes\/topic\//.test(window.location.pathname)) {
     auto_open_in_group_likes();
@@ -767,12 +751,12 @@ $("textarea[name='rv_comment']").attr("rows", 20);
 
 
 var auto_upload_other_site_pic_to_album = function () {
-    //真正的代码其实从后面的if开始的，这里定义个函数，只是为了方便导航定位。
+    // 真正的代码其实从后面的if开始的，这里定义个函数，只是为了方便导航定位。
 };
 
 
 var auto_submit_group_topic_comment = function () {
-    //    console.log("小组话题内的快捷键");
+    // console.log("小组话题内的快捷键");
     document.getElementsByName("comment_form")[0].submit();
 };
 
@@ -789,12 +773,12 @@ $("textarea[name='rv_comment']").keydown(function (e) {
 });
 
 /*
-状态发表回应
-*/
+ * 状态发表回应
+ */
 $("input[name='text']").keydown(function (e) {
     if (e.keyCode === 13 && e.ctrlKey) {
         console.log(e);
-        //e.target.form.submit();
+        // e.target.form.submit();
     }
 });
 
@@ -862,26 +846,24 @@ var methodManager = {
             console.log(aoParam);
             sendResponse(aoParam);
         });
-    }//end call_downloadFirst
+    }// end call_downloadFirst
     , call_get_selection_html: function (request, sender, sendResponse) {
         console.log("call_get_selection_html");
         console.log("document.getSelection:" + document.getSelection());
         console.log("document.getSelection().toString():" + document.getSelection().toString());
 
-        //console.log(getSelectionHtml());
+        // console.log(getSelectionHtml());
         var response = request;
         response.html = getSelectionHtml();
-        //console.log(response);
+        // console.log(response);
         sendResponse(response);
         /*
-        // Only works with a single range - add extra logic to 
-        // iterate over more ranges if needed
-        var selection = window.getSelection();
-        var range = selection.getRangeAt(0);
-        var container = range.commonAncestorContainer;
-        var html = container.innerHTML;
-        console.log("container.innerHTML:"+html);
-        */
+		 * // Only works with a single range - add extra logic to // iterate
+		 * over more ranges if needed var selection = window.getSelection(); var
+		 * range = selection.getRangeAt(0); var container =
+		 * range.commonAncestorContainer; var html = container.innerHTML;
+		 * console.log("container.innerHTML:"+html);
+		 */
     }
     , call_get_src_url: function (request, sender, sendResponse) {
         console.log("call_get_src_url:" + request.img_url);
@@ -945,12 +927,15 @@ var methodManager = {
         else {
             console.log("域名未知");
             response.pageUrl = window.location.href;
-            //   return ;
+            // return ;
         }
-        console.log("callback");
+        console.log("-----------callback-------------");
         console.log(response);
+        
+//        throw new Error("-----------callback-------------");
+        
         sendResponse(response);
-    }//end call call_get_src_url
+    }// end call call_get_src_url
 };
 
 console.log("hello");
@@ -966,27 +951,26 @@ var post_tor_group_topic_page_cnt = 6;
 
 
 /*
- * 是否为帖子首页。 
+ * 是否为帖子首页。
  */
 var is_group_topic_index = function () {
     return parseInt(gQueryParam["start"], 10) === 0;
 };
 
 /*
- * 判断当前页面是否为我发的帖子的首页。
- * @returns {undefined}
+ * 判断当前页面是否为我发的帖子的首页。 @returns {undefined}
  */
 var is_my_group_topic = function () {
-    //if(is_group_topic_index()){
+    // if(is_group_topic_index()){
     console.log($("span.fleft").find("a").text());
     return $("span.fleft").find("a").text() === "修改";
-    //}
-    //return false;
+    // }
+    // return false;
 };
 console.log(gQueryParam["auto_delete"]);
 if (is_my_group_topic() || "true" === gQueryParam["auto_delete"]) {
 
-    if (is_my_group_topic() //&& is_group_topic_index()
+    if (is_my_group_topic() // && is_group_topic_index()
     ) {
 
         console.log("我发的帖子的首页");
@@ -998,18 +982,16 @@ if (is_my_group_topic() || "true" === gQueryParam["auto_delete"]) {
         $("div.topic-opt.clearfix")[0].appendChild(a_delete_all);
     }
 
-    //$("div.sns-bar-rec").css("margin-right","20px");
+    // $("div.sns-bar-rec").css("margin-right","20px");
     $("div.operation_div").each(function () {
         /*
-         * 判断是否可以进行删除，如果可以，则插入快删按钮。
-         */
+		 * 判断是否可以进行删除，如果可以，则插入快删按钮。
+		 */
         var del_element = $(this).find("div").find("a.lnk-delete-comment");
-        //console.log(del_element.attr("title"));
+        // console.log(del_element.attr("title"));
         /*
-        if(del_element!=="display:inline"){
-               return;
-        }
-        */
+		 * if(del_element!=="display:inline"){ return; }
+		 */
         var a = document.createElement("a");
         a.innerHTML = "&nbsp;快删&nbsp;";
         a.href = "javascript:void(0)";
@@ -1017,7 +999,8 @@ if (is_my_group_topic() || "true" === gQueryParam["auto_delete"]) {
         a.addEventListener('click', quick_delete_comment);
         $(this)[0].insertBefore(a, $(this)[0].childNodes[2]);
 
-        if ("true" === gQueryParam["auto_delete"] //&& get_dou_uid()===$(this).attr("id")
+        if ("true" === gQueryParam["auto_delete"] // &&
+													// get_dou_uid()===$(this).attr("id")
         ) {
             console.log("delete " + a.name);
             delete_comment(a.name);
@@ -1028,13 +1011,13 @@ if (is_my_group_topic() || "true" === gQueryParam["auto_delete"]) {
 
 
 /*
- *  删除我在本页的回复
+ * 删除我在本页的回复
  */
 var delete_my_comment = function () {
-    //$("div.sns-bar-rec").css("margin-right","20px");
+    // $("div.sns-bar-rec").css("margin-right","20px");
     $("div.operation_div").each(function () {
         if ($(this).attr("id") !== get_dou_uid()) {
-            //不是我的回复，跳过。
+            // 不是我的回复，跳过。
             return;
         }
         var a = document.createElement("a");
@@ -1049,15 +1032,15 @@ if ("true" === gQueryParam["delete_mine"]) {
 }
 
 /*
-为话题的回复增加链接
-*/
+ * 为话题的回复增加链接
+ */
 if (is_group_topic()) {
     $("ul.topic-reply").children("li").each(function () {
         var did = $(this).attr("id");
 
         $(this).find("span.pubtime").each(function () {
             var txt = $(this).text();
-            //console.log(txt);
+            // console.log(txt);
             var link = "http://" + window.location.hostname + window.location.pathname + window.location.search + "#" + did;
             $(this).html("<a href='" + link + "'>" + txt + "</a>");
         });
@@ -1079,7 +1062,7 @@ function rm_from_right_menu() {
 
     chrome.runtime.sendMessage({ method: "rm_from_right_menu", "albumid": albumid }, function (response) {
         console.log("rm_from_right_menu callback");
-        //window.location.reload();
+        // window.location.reload();
         show_all_right_menu();
     });
 };
@@ -1090,22 +1073,22 @@ function add_to_right_menu() {
     chrome.runtime.sendMessage({ method: "add_to_right_menu", "albumid": albumid, "name": document.title.substring(document.title.indexOf('-') + 1) }
         , function (response) {
             console.log("add_to_right_menu callback");
-            //window.location.reload();
+            // window.location.reload();
             show_all_right_menu();
         });
 }
 
 /*
-如果是在自己的某个相册首页，那么就显示一个加入到右键菜单的选项。
-*/
+ * 如果是在自己的某个相册首页，那么就显示一个加入到右键菜单的选项。
+ */
 if (is_photos_album() && $("div.pl.photitle").find("a").length > 1) {
     var albumid = get_item_id(window.location.pathname);
     console.log("在某个相册首页 " + albumid);
     chrome.runtime.sendMessage({ method: "douban_is_in_context", "albumid": albumid }
-        , function (response) {//回调函数
+        , function (response) {// 回调函数
             console.log(response);
             if (response) {
-                //在右键菜单中
+                // 在右键菜单中
                 console.log("在右键菜单中");
                 var a = document.createElement("a");
                 a.innerHTML = ">从右键菜单中取消";
@@ -1114,7 +1097,7 @@ if (is_photos_album() && $("div.pl.photitle").find("a").length > 1) {
                 $("div.pl.photitle")[0].insertBefore(a, $("div.pl.photitle")[0].childNodes[0]);
 
             } else {
-                //暂时不在右键菜单中
+                // 暂时不在右键菜单中
                 console.log("不在右键菜单中");
                 var a = document.createElement("a");
                 a.innerHTML = ">添加到右键菜单中";
@@ -1159,14 +1142,10 @@ var show_all_right_menu = function () {
             }
             for (var a in response) {
                 /*
-                    {
-                        "title": "保存图片到 " + album_list[a].name
-                        , "contexts": ["image"]
-                        , "onclick": saveImg
-                        , "parentId": pid
-                        , "id": album_list[a].id
-                    }
-                    */
+				 * { "title": "保存图片到 " + album_list[a].name , "contexts":
+				 * ["image"] , "onclick": saveImg , "parentId": pid , "id":
+				 * album_list[a].id }
+				 */
                 gRightMenuAlbumList[response[a].id] = response[a];
                 if (!is_photos_album_index(window.location.pathname)) {
                     return;
@@ -1187,8 +1166,8 @@ var show_all_right_menu = function () {
                 _a.addEventListener('click', rm_from_right_menu);
                 _li.appendChild(_a);
                 _ul.appendChild(_li);
-            }//end for
-        });//end sendMessage
+            }// end for
+        });// end sendMessage
 
 };
 
@@ -1240,7 +1219,13 @@ var showHrefUnderPhoto = function () {
         return;
     }
     var new_html = $("#display").html();
-    $("#display").html(new_html.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/<wbr>/g, "").replace(/<\/wbr>/g, ""));
+    if(new_html){
+    	$("#display").html(new_html.replace(/&lt;/g, "<")//
+    			.replace(/&gt;/g, ">")//
+    			.replace(/<wbr>/g, "")//
+    			.replace(/<\/wbr>/g, ""));	
+    }
+    
 }
 showHrefUnderPhoto();
 
@@ -1251,7 +1236,7 @@ var add_group_to_fav = function () {
     var group_icon = $("#group-info").children("img").attr("src");
     console.log(group_icon);
     chrome.runtime.sendMessage({ method: "add_group_to_fav", "group_id": group_id, "group_icon": group_icon }
-        , function (response) {//回调函数
+        , function (response) {// 回调函数
             window.location.reload();
         }
     );
@@ -1264,7 +1249,7 @@ var rm_group_from_fav = function () {
     var group_icon = $("#group-info").children("img").attr("src");
     console.log(group_icon);
     chrome.runtime.sendMessage({ method: "rm_group_from_fav", "group_id": group_id, "group_icon": group_icon }
-        , function (response) {//回调函数
+        , function (response) {// 回调函数
             window.location.reload();
         }
     );
@@ -1278,7 +1263,7 @@ if (new RegExp(/\/group\/[a-zA-Z0-9\-]+\//).test(window.location.pathname)) {
     _a.id = "add_group_to_fav";
     var group_id = get_item_id(window.location.pathname);
     chrome.runtime.sendMessage({ method: "group_is_in_fav", "group_id": group_id }
-        , function (response) {//回调函数
+        , function (response) {// 回调函数
             console.log(response);
             if (response) {
                 console.log("already in group favorate");
@@ -1301,7 +1286,7 @@ if (new RegExp(/\/group\/[a-zA-Z0-9\-]+\//).test(window.location.pathname)) {
 if ("/group/" === window.location.pathname || new RegExp(/\/group\/[a-zA-Z0-9\-\/]*\//).test(window.location.pathname)) {
 
     chrome.runtime.sendMessage({ method: "group_fav_list" }
-        , function (response) {//回调函数
+        , function (response) {// 回调函数
             var newHtml = "";
             for (var i in response) {
                 console.log(JSON.stringify(response[i]));
@@ -1310,8 +1295,10 @@ if ("/group/" === window.location.pathname || new RegExp(/\/group\/[a-zA-Z0-9\-\
             console.log("new List: " + newHtml);
             $("div.content").children("ul").html(newHtml);
             var mod = $("div.aside").find("div.mod:eq(0)");
-            //mod.html("<div class=content><ul>"+newHtml+"</ul></div>"+mod.html());
-            //$("div.side-reg").html("<div class=content><ul>"+newHtml+"</ul></div>");
+            // mod.html("<div
+			// class=content><ul>"+newHtml+"</ul></div>"+mod.html());
+            // $("div.side-reg").html("<div
+			// class=content><ul>"+newHtml+"</ul></div>");
         }
     );
 }
@@ -1325,15 +1312,15 @@ var _reply = function () {
     did = (targ.name);
 
     var txt = $("#add_comment").find("textarea");
-    //txt.html(txt.html()+'@'+targ.title+' ');
+    // txt.html(txt.html()+'@'+targ.title+' ');
     txt.val(txt.val() + '@' + did + ' ');
-    //console.log(txt.html());
-    //console.log(txt.text());
-    //console.log(txt.val());
+    // console.log(txt.html());
+    // console.log(txt.text());
+    // console.log(txt.val());
 
 }
 
-//为豆瓣广播下增加回复按钮。
+// 为豆瓣广播下增加回复按钮。
 if (/^\/$/.test(window.location.pathname)) {
     console.log("status index");
     $("em").each(function () {
@@ -1345,7 +1332,7 @@ if (/^\/$/.test(window.location.pathname)) {
         _a.href = "#add_comment";
         _a.name = did;
         _a.title = $(this).find("a").html();
-        _a.addEventListener('click', _reply);//rm_from_right_menu
+        _a.addEventListener('click', _reply);// rm_from_right_menu
         $(this)[0].appendChild(_a);
     }
     );
@@ -1362,7 +1349,7 @@ if (/^\/people\/.*\/status\/\d+\/$/.test(window.location.pathname)) {
         _a.href = "#add_comment";
         _a.name = did;
         _a.title = $(this).find("a").html();
-        _a.addEventListener('click', _reply);//rm_from_right_menu
+        _a.addEventListener('click', _reply);// rm_from_right_menu
         $(this)[0].appendChild(_a);
     }
     );
@@ -1430,36 +1417,22 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 
 
     /*
-    $(this).find("div.status-item").attr("data-target-type")
-    + sns 广播
-    + movie 电影
-    + rec 推荐
-    + site 小站
-    + "" 转播？？  --  refresh
-
-
-    
-    $(this).find("div.status-item").attr("data-object-kind")
-    + 1000 关注了新成员
-    + 1001 图书
-    + 1018 广播
-    + 1002 想看
-    + 1022 推荐网页
-    + 1025 推荐相册中的照片
-    + 1026 推荐相册
-    + 1013 小组话题
-    + 1015 日记
-    + 1060 添加豆列
-    + 2001 参加线上活动
-    + 3043 豆瓣FM
-    */
+	 * $(this).find("div.status-item").attr("data-target-type") + sns 广播 + movie
+	 * 电影 + rec 推荐 + site 小站 + "" 转播？？ -- refresh
+	 * 
+	 * 
+	 * 
+	 * $(this).find("div.status-item").attr("data-object-kind") + 1000 关注了新成员 +
+	 * 1001 图书 + 1018 广播 + 1002 想看 + 1022 推荐网页 + 1025 推荐相册中的照片 + 1026 推荐相册 +
+	 * 1013 小组话题 + 1015 日记 + 1060 添加豆列 + 2001 参加线上活动 + 3043 豆瓣FM
+	 */
     var forbidShowUserNameStatusConfig = {//
-        //data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
-        //林夕 小组话题推荐
+        // data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
+        // 林夕 小组话题推荐
         "133431218": "-1013"
-        //文森  全部
+        // 文森 全部
         , "115947384": "-ALL"
-        //小蘑菇
+        // 小蘑菇
         , "58404341": "-ALL"
         //
         , "61296149": "-ALL"
@@ -1471,7 +1444,7 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
         , "57425095": "-ALL"
         , "50012669": "-1000;"
         , "lemonhall2016": "+refresh"
-        //dearbear
+        // dearbear
         , "1687784": "-ALL"
         , "park0322": "-ALL"
         , "143564618": "-ALL"
@@ -1484,6 +1457,7 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
         , "154141451": "-ALL"
         , "4383866": "-ALL"
         , "115116249": "-ALL"
+        , "guiqulaixi":"-ALL"
     };
 
     var bHideStatus = function (data_uid, data_target_type, data_object_kind) {
@@ -1492,13 +1466,13 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
         } else if (-1 != forbidShowUserNameStatusConfig[data_uid].indexOf("+" + data_object_kind) //
             || -1 !== forbidShowUserNameStatusConfig[data_uid].indexOf("+" + data_target_type) //
             || -1 !== forbidShowUserNameStatusConfig[data_uid].indexOf("+" + "ALL")//
-        )//end if
+        )// end if
         {
             return false;
         } else if (-1 != forbidShowUserNameStatusConfig[data_uid].indexOf("-" + data_object_kind) //
             || -1 !== forbidShowUserNameStatusConfig[data_uid].indexOf("-" + data_target_type)//
             || -1 !== forbidShowUserNameStatusConfig[data_uid].indexOf("-" + "ALL")//
-        )//end if
+        )// end if
         {
             return true;
         }
@@ -1508,12 +1482,12 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
         _href = _href.substring(0, _href.length - 1)
         return _href.substring(_href.lastIndexOf("/") + 1);
     }
-    //首页里面，屏蔽某个人的广播。
+    // 首页里面，屏蔽某个人的广播。
     $("div.new-status").each(function () {
         var _status = $(this).find("div.status-item");
         var posterName = _status.find("a.lnk-people").html();
         var posterHref = _status.find("a.lnk-people").attr("href");
-        //var data_uid=_status.attr("data-uid");
+        // var data_uid=_status.attr("data-uid");
         var data_uid = get_data_uid_from_href(posterHref);
         var postType = _status.attr("data-target-type");
         var objectKind = _status.attr("data-object-kind");
@@ -1521,15 +1495,15 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
             postType = "refresh";
         }
         if (!bHideStatus(data_uid, postType, objectKind)) {
-            //无配置，打开的。
+            // 无配置，打开的。
             console.log("show posterName:" + posterName + ",postType:" + postType + ",objectKind:" + objectKind + ",data_uid:" + data_uid);
         } else {
-            //如果配置了，我不想看到这个人的状态。
+            // 如果配置了，我不想看到这个人的状态。
             $(this).hide();
             console.log("hide posterName:" + posterName + ",postType:" + postType + ",objectKind:" + objectKind + ",data_uid:" + data_uid);
         }
 
-        //如果是转播
+        // 如果是转播
         _href = $(this).find("span.reshared_by").find("a").attr("href");
         if (-1 != $(this).attr("class").indexOf("status-reshared-wrapper") || _href) {
             console.log("this is refresh");
@@ -1539,15 +1513,15 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
             }
             data_uid = get_data_uid_from_href(_href);
             if (!bHideStatus(data_uid, postType, objectKind)) {
-                //无配置，打开的。
+                // 无配置，打开的。
                 console.log("show posterName:" + posterName + ",postType:" + postType + ",objectKind:" + objectKind + ",data_uid:" + data_uid);
             } else {
-                //如果配置了，我不想看到这个人的状态。
+                // 如果配置了，我不想看到这个人的状态。
                 $(this).hide();
                 console.log("hide posterName:" + posterName + ",postType:" + postType + ",objectKind:" + objectKind + ",data_uid:" + data_uid);
             }
-        }//end span.reshared_by
-    });//end $("div.new-status").each(function())
+        }// end span.reshared_by
+    });// end $("div.new-status").each(function())
 
 
 }
@@ -1555,7 +1529,7 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 
 
 
-//分享你大爷
+// 分享你大爷
 if (is_group_topic()) {
     $("div.sharing").hide();
 }

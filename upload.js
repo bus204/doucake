@@ -435,20 +435,6 @@ var download_pic_call=function(dlObj){
             console.log(response);
         }
     );
-    
-    /*
-    chrome.tabs.sendRequest(
-        parseInt(request.tabid,10)
-        ,request
-        ,function(response){
-            console.log("call_downloadFirst callback");
-            console.log(response);
-            sendResponse(response);
-
-            console.log("call_downloadFirst callback  222");
-        }
-    );
-    */
 }
 
 
@@ -466,6 +452,13 @@ if(is_photos_album_upload(window.location.pathname)){
             +"图片链接：<a href='"+decodeURIComponent(gQueryParam["img_url"])+"' target='_blank'>"+decodeURIComponent(gQueryParam["img_url"])+"</a><br/><br/>"
             +"<img src='"+decodeURIComponent(gQueryParam["img_url"])+"'/>");
         $("p.uploader-tips").hide();
+        
+        var _header=$("div#content").find("h1");
+        var _old_html=_header.html();
+        var _href=window.location.href;
+        _new_html="<a target='_blank' href='"+_href.substring(0,_href.lastIndexOf("/"))+"'>"+_old_html+"</a>";
+        _header.html(_new_html);
+        
         get_page(upload_other_site_pic);
         add_desc_save_callback=upload_other_site_pic_callback;
     }

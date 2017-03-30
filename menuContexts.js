@@ -108,8 +108,8 @@ var open_up_load_page=function(info,tab,response){
     }else{
         pageUrl=((info.pageUrl.indexOf("http")==0?"":"https://")+info.pageUrl);
     }
-    if(-1!=img_src_url.indexOf('/thumb/')){
-        img_src_url=img_src_url.replace(/thumb/g,"photo");
+    if(-1!=img_src_url.indexOf('/lthumb/')){
+        img_src_url=img_src_url.replace(/lthumb/g,"lphoto");
         try{
             var myArr=/.*\/p(\d+).*/.exec(img_src_url);
             if(myArr && myArr.length>0){
