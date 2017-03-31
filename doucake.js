@@ -1526,8 +1526,14 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 
 }
 
-
-
+if(/\/people\/.*?/.test(window.location.pathname)){
+	console.log("in someone index");
+	if($("textarea[name='bp_text']").length>0){
+			console.log(window.location.pathname+" has follow you");
+			var _html=$("span#remarkDisplay").html();
+			$("span#remarkDisplay").html(_html+"&nbsp;√");
+	}
+}
 
 // 分享你大爷
 if (is_group_topic()) {
