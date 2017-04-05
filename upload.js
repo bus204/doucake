@@ -56,7 +56,11 @@ var getFileName = function(asPath) {
     console.log("asPath:" + asPath);
     var pieces = asPath.split("/");
     var fname = pieces[pieces.length - 1];
+    if(fname.indexOf('?')>-1){
+    	fname=fname.substring(0,fname.indexOf('?'));
+    }
     console.log("fname:" + fname);
+    
     return fname;
 };
 
@@ -92,7 +96,8 @@ window.downloadFirst = function(aoParam,cb_func) {
 
     console.log('downloadFirst src:' + asUrl);
     //默认的图片格式。
-    vImageType=asUrl.substring(asUrl.lastIndexOf('.')+1);
+    vImageType=asUrl.substring(0,asUrl.indexOf('?'));
+    vImageType=vImageType.substring(vImageType.lastIndexOf('.')+1);
     if(vImageType.length!=0){
     	vImageType="image/"+vImageType;
     }
