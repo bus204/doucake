@@ -26,7 +26,6 @@ var is_group_topic = function () {
 var is_photos_photo = function () {
     return /.*\/photos\/photo\/.*/.test(window.location.pathname);
 };
-
 function setCookie(c_name, value, expiredays) {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + expiredays);
@@ -64,14 +63,20 @@ function parseQueryString(vhref) {
     }
     return vars;
 }
-
 window.parseQueryString = parseQueryString;
 
+var is_post_douban_sns=function(album){
+	if(!album){
+		return false;
+	}
+	var _album=decodeURIComponent(album);
+	return _album.indexOf("#")==0;
+}
 /**
  * 打开upload页面，得到upload_token
  */
 var get_page = function (get_page_callback) {
-    console.log("get_page");
+    console.log("get_page:");
     var gQueryParam = parseQueryString(window.location.search);
     console.log(gQueryParam);
     /*
@@ -111,8 +116,10 @@ var get_page = function (get_page_callback) {
     /*
 	 * 访问链接获得
 	 */
+    var _album=decodeURIComponent(goParam.album);
+    console.log("goParam.album : "+_album);
     var xhr = new XMLHttpRequest();
-    if (goParam.album == "DOUBAN_GUANGBO" || goParam.album == "beauty_stranger") {
+    if(is_post_douban_sns(goParam.album )){
         xhr.open('get', 'https://www.douban.com/', true);
     } else {
         xhr.open('GET', 'https://www.douban.com/photos/album/' + goParam.album + '/upload', true);

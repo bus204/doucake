@@ -14,6 +14,12 @@ var is_photos_album_upload=function(pathname){
 };
 
 var gQueryParam = parseQueryString(window.location.search);
+var is_post_douban_sns=function(album){
+	if(!album){
+		return false;
+	}
+	return album.indexOf("%23")==0;
+}
 /*
  本地文件系统对象
  */
@@ -161,7 +167,7 @@ window.uploadPic = function(aoUploadParam) {
             console.log('fileReader.onloadend');
             var xhr = new XMLHttpRequest();
             var targetUrl="https://www.douban.com/j/photos/addphoto_draft";
-            if('DOUBAN_GUANGBO'==goParam.album || "beauty_stranger"==goParam.album ){
+            if(is_post_douban_sns(gQueryParam.album)){
 				targetUrl='https://www.douban.com/j/upload';
             }
             
@@ -169,7 +175,7 @@ window.uploadPic = function(aoUploadParam) {
             console.log('open addphoto_draft targetUrl:'+targetUrl);
 
             xhr.multipart = true;
-            if(gQueryParam.album=="DOUBAN_GUANGBO" || gQueryParam.album=="beauty_stranger"){
+            if(is_post_douban_sns(gQueryParam.album)){
             	var fileBlob = new Blob(
 	                    [file]
 	                    , {
@@ -209,7 +215,7 @@ window.uploadPic = function(aoUploadParam) {
                         }
                         aoUploadParam.id=picObj.id;
                         aoUploadParam.url=picObj.url;
-                        if("DOUBAN_GUANGBO"==gQueryParam.album || "beauty_stranger"==gQueryParam.album){
+                        if(is_post_douban_sns(gQueryParam.album)){
                         	post_guangbo(aoUploadParam);
                         }else{
                             console.log("aoUploadParam:"+aoUploadParam);
@@ -246,7 +252,8 @@ window.post_guangbo=function(aoUploadParam){
     formData.append("uploaded", aoUploadParam.url);
     formData.append("ck", goParam.ck);
     formData.append("comment", decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g,"")+" "+decodeURIComponent(gQueryParam["title"]));
-
+    console.log("------");
+    console.log(formData);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {//服务器正常响应
