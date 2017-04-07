@@ -12,7 +12,10 @@ var post_to_guangbo_list = [ {
 }, {
 	id : "#42gif",
 	name : "#42gif#"
-}, ];
+}, {
+	id : "#42wtf",
+	name : "#我当时就凌乱了#"
+}];
 
 function test_selection(info, tab) {
 	console.log("test_selection");
@@ -60,7 +63,7 @@ function saveImg(info, tab) {
 		pageUrl : info.pageUrl,
 		albumid : info.menuItemId
 	}, function(response) {
-		console.log("sendRequest callback");
+		console.log("sendRequest callback "+JSON.stringify(response));
 		console.log(response);
 		var iIndex = getSnsConfIndex(info.menuItemId);
 		if (-1 != iIndex) {

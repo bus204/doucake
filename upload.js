@@ -54,11 +54,13 @@ var writeFile = function(fileEntry) {
  */
 var getFileName = function(asPath) {
     console.log("asPath:" + asPath);
-    var pieces = asPath.split("/");
-    var fname = pieces[pieces.length - 1];
+    var fname=asPath;
     if(fname.indexOf('?')>-1){
     	fname=fname.substring(0,fname.indexOf('?'));
     }
+    var pieces = fname.split("/");
+    var fname = pieces[pieces.length - 1];
+    
     console.log("fname:" + fname);
     
     return fname;
@@ -108,12 +110,15 @@ window.downloadFirst = function(aoParam,cb_func) {
     xhr.open('GET', asUrl, true);
     xhr.responseType = 'blob';
     xhr.onload = function(e) {
-        console.log('xhr.onload');
+        console.log('xhr.onload ,response code:'+this.status);
+        if(200!=this.status){
+        	throw new Error("window.downloadFirst error:"+this.status);
+        }
         window.requestFileSystem(window.TEMPORARY, gFileSize, function(fs) {
             g_fs = fs;
             var fileName = getFileName(asUrl);
 
-            console.log("fileName:" + fileName);
+            console.log("fileName:" + fileName+"  vImageType:"+vImageType);
             fs.root.getFile(fileName, {create: true}, function(fileEntry) {
 
                 console.log("getFile");
@@ -200,23 +205,31 @@ window.uploadPic = function(aoUploadParam) {
 	            formData.append("category", "photo");
             	formData.append("albumid", goParam.album);
             }
+            console.log("vImageType: "+vImageType );
             formData.append("ck", goParam.ck);
             formData.append("upload_auth_token", goParam.token);
 
             xhr.load = function(e) {
                 console.log("xhr.port2addphoto_draft:" + e);
             };
-
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                  var _progress = (e.loaded / e.total) * 100;
+//                  progressBar.textContent = progressBar.value; // Fallback for unsupported browsers.
+                  console.log(" xhr.upload.onprogress : "+_progress);
+                }
+              };//end xhr.upload.onprogress
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {//服务器正常响应
                         console.log("var picObj=" + xhr.responseText + "");
                         eval("var picObj=" + xhr.responseText + "");
-                        console.log(picObj.r);
+                        console.log("picObj.r:"+picObj.r);
                         if (picObj.r!='0' && !picObj.id) {
                             //文件上传失败，要重试
                             console.log("上传失败，不重试");
-                            return;
+//                            return;
+                            throw new Error("上传失败，不重试");
                         }
                         aoUploadParam.id=picObj.id;
                         aoUploadParam.url=picObj.url;
@@ -225,14 +238,15 @@ window.uploadPic = function(aoUploadParam) {
                         }else{
                             console.log("aoUploadParam:"+aoUploadParam);
                         	add_desc_save(aoUploadParam);		
-                            console.log("aoUploadParam:"+aoUploadParam);
+                            console.log("aoUploadParam:"+JSON.stringify(aoUploadParam));
                         }
                         
                         
                     } else {//服务器无正常响应，重试
                         console.log("xhr.status:" + xhr.status + " 暂时 不 重试");
                         //uploadPic(aoUploadParam);
-                        return;
+//                        return;
+                        throw new Error("xhr.status:" + xhr.status + " 暂时 不 重试");
                     }
                 } else {
                     console.log("xhr.readyState:" + xhr.readyState);
@@ -257,7 +271,7 @@ window.post_guangbo=function(aoUploadParam){
     formData.append("uploaded", aoUploadParam.url);
     formData.append("ck", goParam.ck);
     formData.append("comment", decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g,"")+" "+decodeURIComponent(gQueryParam["title"]));
-    console.log("------");
+    console.log("formData:"+JSON.stringify(formData));
     console.log(formData);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {

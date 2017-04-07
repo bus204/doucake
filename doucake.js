@@ -1434,37 +1434,37 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 	 * 1013 小组话题 + 1015 日记 + 1060 添加豆列 + 2001 参加线上活动 + 3043 豆瓣FM
 	 */
     var forbidShowUserNameStatusConfig = {//
-        // data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
-        // 林夕 小组话题推荐
-        "133431218": "-1013"
-        // 文森 全部
-        , "115947384": "-ALL"
-        // 小蘑菇
-        , "58404341": "-ALL"
-        //
-        , "61296149": "-ALL"
-        //
-        , "my774880647": "-ALL"
-        , "1957950815": "-ALL"
-        , "125837622": "-ALL"
-        , "115970827": "-ALL"
-        , "57425095": "-ALL"
-        , "50012669": "-1000;"
-        , "lemonhall2016": "+refresh"
-        // dearbear
-        , "1687784": "-ALL"
-        , "park0322": "-ALL"
-        , "143564618": "-ALL"
-        , "140966605": "-ALL"
-        , "133431218": "-ALL"
-        , "84146679": "-ALL"
-        , "64568774": "-ALL"
-        , "boomla7": "-ALL"
-        , "babustar": "-ALL"
-        , "154141451": "-ALL"
-        , "4383866": "-ALL"
-        , "115116249": "-ALL"
-        , "guiqulaixi":"-ALL"
+//        // data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
+//        // 林夕 小组话题推荐
+//        "133431218": "-1013"
+//        // 文森 全部
+//        , "115947384": "-ALL"
+//        // 小蘑菇
+//        , "58404341": "-ALL"
+//        //
+//        , "61296149": "-ALL"
+//        //
+//        , "my774880647": "-ALL"
+//        , "1957950815": "-ALL"
+//        , "125837622": "-ALL"
+//        , "115970827": "-ALL"
+//        , "57425095": "-ALL"
+//        , "50012669": "-1000;"
+//        , "lemonhall2016": "+refresh"
+//        // dearbear
+//        , "1687784": "-ALL"
+//        , "park0322": "-ALL"
+//        , "143564618": "-ALL"
+//        , "140966605": "-ALL"
+//        , "133431218": "-ALL"
+//        , "84146679": "-ALL"
+//        , "64568774": "-ALL"
+//        , "boomla7": "-ALL"
+//        , "babustar": "-ALL"
+//        , "154141451": "-ALL"
+//        , "4383866": "-ALL"
+//        , "115116249": "-ALL"
+//        , "guiqulaixi":"-ALL"
     };
 
     var bHideStatus = function (data_uid, data_target_type, data_object_kind) {
