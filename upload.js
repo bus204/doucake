@@ -105,7 +105,6 @@ window.downloadFirst = function(aoParam,cb_func) {
     }
     console.log("vImageType:"+vImageType);
 
-
     var xhr = new XMLHttpRequest();
     xhr.open('GET', asUrl, true);
     xhr.responseType = 'blob';
@@ -212,11 +211,15 @@ window.uploadPic = function(aoUploadParam) {
             xhr.load = function(e) {
                 console.log("xhr.port2addphoto_draft:" + e);
             };
+            
+            var __comment=decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g,"")+" "+decodeURIComponent(gQueryParam["title"]);
             xhr.upload.onprogress = function(e) {
                 if (e.lengthComputable) {
                   var _progress = (e.loaded / e.total) * 100;
-//                  progressBar.textContent = progressBar.value; // Fallback for unsupported browsers.
                   console.log(" xhr.upload.onprogress : "+_progress);
+                  if($("#isay-cont")){
+                  	  $("#isay-cont").text(__comment+"  "+_progress);
+                  }//end if
                 }
               };//end xhr.upload.onprogress
             xhr.onreadystatechange = function() {
@@ -471,6 +474,34 @@ if(is_photos_album_upload(window.location.pathname)){
         && gQueryParam["album"]
     ){
         goParam.album=gQueryParam["album"];
+        
+        
+        
+                  if(is_post_douban_sns(goParam.album)){
+                  	  console.log("is_post_douban_sns true");
+                
+                  	  	if($("li.isay-pic").children("a")){
+                  	  		console.log("find  a to trigger");
+                  	  	}else{
+                  	  		console.log("no target");
+                  	  	}
+                
+					$("li.isay-pic").children("a").trigger("click");//激活 发照片的标签
+					//$("li.isay-pic").children("a")[0].click();//激活 发照片的标签
+					//$("li.isay-pic")[0].click();//激活 发照片的标签
+					//$("li.isay-pic").trigger("click");//激活 发照片的标签
+		                  	console.log("click");
+						$("#isay-cont").trigger("focus");//模拟聚焦
+		                  	console.log("focus");
+							$("#isay-cont").text("trigger");
+					//$("#isay-cont")[0].focus();//模拟聚焦
+					
+        			//throw new Error("just break");
+		          }else{
+		                  	console.log("is_post_douban_sns false");
+		          }
+                  
+                  
         console.log("准备自动上传");
         $("div.uploader-button").css({"height":"500px","width":"600px","background":"url() no-repeat 0 0"});
         $("div.uploader-button").html("自动上传中....<br/>"

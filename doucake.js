@@ -1419,8 +1419,8 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
     $("div.hd")[0].appendChild(_a);
 
 
-    $("li.isay-pic").find("a").unbind();
-    $("li.isay-pic").find("a").attr("href", "https://www.douban.com/mine/photos");
+    //$("li.isay-pic").find("a").unbind();
+    //$("li.isay-pic").find("a").attr("href", "https://www.douban.com/mine/photos");
 
 
     /*
