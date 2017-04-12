@@ -9,5 +9,6 @@ a chrome extension ,work on douban.com.
 
 并且可以绕过跨域问题。
 
-##localStorage存储
+## localStorage存储
+
 但是，localStorage 的大小有限制，所以，每次上传成功后，要记得清空对应的存储。

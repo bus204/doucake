@@ -52,7 +52,11 @@ function getCookie(c_name) {
     }
     return c_value;
 }
-
+/**
+ * 按照URL QueryString的格式，来解析 vhref，但是并没有做 UrlDecode. 
+ * @param {string} vhref 
+ * @returns 一个映射
+ */
 function parseQueryString(vhref) {
     var vars = [], hash;
     var hashes = vhref.slice(vhref.indexOf('?') + 1).split('&');
@@ -64,13 +68,17 @@ function parseQueryString(vhref) {
     return vars;
 }
 window.parseQueryString = parseQueryString;
-
-var is_post_douban_sns=function(album){
-	if(!album){
-		return false;
-	}
-	var _album=decodeURIComponent(album);
-	return _album.indexOf("#")==0;
+/**
+ * 判断目标相册ID 是否为 广播中的话题。当 album 以 “#” 开头时，认为是一个 广播中的话题。
+ * @param {string} album 
+ * @returns {boolean}
+ */
+var is_post_douban_sns = function (albumid) {
+    if (!albumid) {
+        return false;
+    }
+    var _album = decodeURIComponent(albumid);
+    return _album.indexOf("#") == 0;
 }
 /**
  * 打开upload页面，得到upload_token
@@ -116,10 +124,10 @@ var get_page = function (get_page_callback) {
     /*
 	 * 访问链接获得
 	 */
-    var _album=decodeURIComponent(goParam.album);
-    console.log("goParam.album : "+_album);
+    var _album = decodeURIComponent(goParam.album);
+    console.log("goParam.album : " + _album);
     var xhr = new XMLHttpRequest();
-    if(is_post_douban_sns(goParam.album )){
+    if (is_post_douban_sns(goParam.album)) {
         xhr.open('get', 'https://www.douban.com/', true);
     } else {
         xhr.open('GET', 'https://www.douban.com/photos/album/' + goParam.album + '/upload', true);
@@ -256,7 +264,9 @@ var get_poem_prefix = function () {
     return target_list[Math.floor(Math.random() * 10000) % target_list.length];
 };
 
-
+/**
+ * @brief 从当前页面的URL中，来获取 小组帖子的ID。
+ */
 var get_group_topic_id = function () {
     var tmpArray = window.location.pathname.split("/");
     var tid = tmpArray[tmpArray.length - 2];
@@ -279,7 +289,7 @@ var add_desc_save_callback = null;
  */
 var photos_photo_add_desc_save_callback = function () {
     // 标记为喜欢add_comment_to_group_topic
-    like(function () {
+    add_group_topic_to_my_like(function () {
 
         // clicked_button.removeEventListener('click', clicked_function);
         clicked_button.innerHTML = "<a href='https://www.douban.com/photos/album/" + goParam.album + "/' target=_blank>查看</a>";
@@ -287,8 +297,11 @@ var photos_photo_add_desc_save_callback = function () {
 
 };
 
-
-var like = function (func) {
+/**
+ * 向 我的喜欢 中添加小组帖子。
+ * @param {*} func 添加成功后的回调函数。 
+ */
+var add_group_topic_to_my_like = function (like_succ_func_callback) {
     var tid = get_group_topic_id();
     console.log("like tid:" + tid);
 
@@ -307,7 +320,8 @@ var like = function (func) {
     xhr.open("POST", 'https://www.douban.com/j/like', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            func();
+            //喜欢成功后，回调。
+            like_succ_func_callback();
         }
     };
     xhr.send(formData);
@@ -938,9 +952,9 @@ var methodManager = {
         }
         console.log("-----------callback-------------");
         console.log(response);
-        
-//        throw new Error("-----------callback-------------");
-        
+
+        //        throw new Error("-----------callback-------------");
+
         sendResponse(response);
     }// end call call_get_src_url
 };
@@ -1007,7 +1021,7 @@ if (is_my_group_topic() || "true" === gQueryParam["auto_delete"]) {
         $(this)[0].insertBefore(a, $(this)[0].childNodes[2]);
 
         if ("true" === gQueryParam["auto_delete"] // &&
-													// get_dou_uid()===$(this).attr("id")
+            // get_dou_uid()===$(this).attr("id")
         ) {
             console.log("delete " + a.name);
             delete_comment(a.name);
@@ -1179,7 +1193,7 @@ var show_all_right_menu = function () {
 };
 
 if ("www.douban.com" == window.location.hostname //
-    && $("a.lnk-create").length>0 //
+    && $("a.lnk-create").length > 0 //
     && window.location.href.indexOf("group") == -1) {
     console.log("show_all_right_menu");
     show_all_right_menu();
@@ -1226,13 +1240,13 @@ var showHrefUnderPhoto = function () {
         return;
     }
     var new_html = $("#display").html();
-    if(new_html){
-    	$("#display").html(new_html.replace(/&lt;/g, "<")//
-    			.replace(/&gt;/g, ">")//
-    			.replace(/<wbr>/g, "")//
-    			.replace(/<\/wbr>/g, ""));	
+    if (new_html) {
+        $("#display").html(new_html.replace(/&lt;/g, "<")//
+            .replace(/&gt;/g, ">")//
+            .replace(/<wbr>/g, "")//
+            .replace(/<\/wbr>/g, ""));
     }
-    
+
 }
 showHrefUnderPhoto();
 
@@ -1303,9 +1317,9 @@ if ("/group/" === window.location.pathname || new RegExp(/\/group\/[a-zA-Z0-9\-\
             $("div.content").children("ul").html(newHtml);
             var mod = $("div.aside").find("div.mod:eq(0)");
             // mod.html("<div
-			// class=content><ul>"+newHtml+"</ul></div>"+mod.html());
+            // class=content><ul>"+newHtml+"</ul></div>"+mod.html());
             // $("div.side-reg").html("<div
-			// class=content><ul>"+newHtml+"</ul></div>");
+            // class=content><ul>"+newHtml+"</ul></div>");
         }
     );
 }
@@ -1434,37 +1448,37 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 	 * 1013 小组话题 + 1015 日记 + 1060 添加豆列 + 2001 参加线上活动 + 3043 豆瓣FM
 	 */
     var forbidShowUserNameStatusConfig = {//
-//        // data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
-//        // 林夕 小组话题推荐
-//        "133431218": "-1013"
-//        // 文森 全部
-//        , "115947384": "-ALL"
-//        // 小蘑菇
-//        , "58404341": "-ALL"
-//        //
-//        , "61296149": "-ALL"
-//        //
-//        , "my774880647": "-ALL"
-//        , "1957950815": "-ALL"
-//        , "125837622": "-ALL"
-//        , "115970827": "-ALL"
-//        , "57425095": "-ALL"
-//        , "50012669": "-1000;"
-//        , "lemonhall2016": "+refresh"
-//        // dearbear
-//        , "1687784": "-ALL"
-//        , "park0322": "-ALL"
-//        , "143564618": "-ALL"
-//        , "140966605": "-ALL"
-//        , "133431218": "-ALL"
-//        , "84146679": "-ALL"
-//        , "64568774": "-ALL"
-//        , "boomla7": "-ALL"
-//        , "babustar": "-ALL"
-//        , "154141451": "-ALL"
-//        , "4383866": "-ALL"
-//        , "115116249": "-ALL"
-//        , "guiqulaixi":"-ALL"
+        //        // data-uid:data-object-kind,data-object-kind,data-object-kind,data-object-kind
+        //        // 林夕 小组话题推荐
+        //        "133431218": "-1013"
+        //        // 文森 全部
+        //        , "115947384": "-ALL"
+        //        // 小蘑菇
+        //        , "58404341": "-ALL"
+        //        //
+        //        , "61296149": "-ALL"
+        //        //
+        //        , "my774880647": "-ALL"
+        //        , "1957950815": "-ALL"
+        //        , "125837622": "-ALL"
+        //        , "115970827": "-ALL"
+        //        , "57425095": "-ALL"
+        //        , "50012669": "-1000;"
+        //        , "lemonhall2016": "+refresh"
+        //        // dearbear
+        //        , "1687784": "-ALL"
+        //        , "park0322": "-ALL"
+        //        , "143564618": "-ALL"
+        //        , "140966605": "-ALL"
+        //        , "133431218": "-ALL"
+        //        , "84146679": "-ALL"
+        //        , "64568774": "-ALL"
+        //        , "boomla7": "-ALL"
+        //        , "babustar": "-ALL"
+        //        , "154141451": "-ALL"
+        //        , "4383866": "-ALL"
+        //        , "115116249": "-ALL"
+        //        , "guiqulaixi":"-ALL"
     };
 
     var bHideStatus = function (data_uid, data_target_type, data_object_kind) {
@@ -1533,13 +1547,13 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 
 }
 
-if(/\/people\/.*?/.test(window.location.pathname)){
-	console.log("in someone index");
-	if($("textarea[name='bp_text']").length>0){
-			console.log(window.location.pathname+" has follow you");
-			var _html=$("span#remarkDisplay").html();
-			$("span#remarkDisplay").html(_html+"&nbsp;√");
-	}
+if (/\/people\/.*?/.test(window.location.pathname)) {
+    console.log("in someone index");
+    if ($("textarea[name='bp_text']").length > 0) {
+        console.log(window.location.pathname + " has follow you");
+        var _html = $("span#remarkDisplay").html();
+        $("span#remarkDisplay").html(_html + "&nbsp;√");
+    }
 }
 
 // 分享你大爷

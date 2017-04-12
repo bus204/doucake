@@ -3,6 +3,9 @@
  * 扩展之间传递消息。
  */
 
+/**
+ * @brief 图片右键菜单内的 广播话题列表
+ */
 var post_to_guangbo_list = [ {
 	id : "#douban_guangbo",
 	name : "发豆瓣广播"
@@ -178,10 +181,23 @@ function getQueryString(url, name) {
 	return null;
 
 };
-
+/**
+ * @brief 右键菜单内的相册列表
+ * @details 
+ * json 数组，例如：<br/>
+ * [
+ * 	{"id":"1625193659","name":"1024（私）"}
+ * ]
+ * 
+ * 
+ * <br/>
+ * id 豆瓣相册的id<br/>
+ * name 豆瓣相册的name，也会展示为右键菜单。<br/>
+ * 
+ */
 var album_list = null;
 /**
- * 鼠标菜单上追加列表。
+ * @brief 鼠标菜单上追加列表。
  */
 var attach_album_list = function() {
 	chrome.contextMenus.removeAll();
@@ -197,7 +213,7 @@ var attach_album_list = function() {
 	console.log(window.localStorage.getItem("album_list"));
 	var tmp = "album_list=" + window.localStorage.getItem("album_list");
 	eval(tmp);
-	console.log(JSON.stringify(album_list));
+//	console.log(JSON.stringify(album_list));
 	/*
 	 * 发豆瓣广播。
 	 */
@@ -209,7 +225,7 @@ var attach_album_list = function() {
 			"parentId" : pid,
 			"id" : post_to_guangbo_list[a].id
 		});
-	}
+	}//end for post_to_guangbo_list
 	for ( var a in album_list) {
 		chrome.contextMenus.create({
 			"title" : "保存图片到 " + album_list[a].name,
@@ -218,7 +234,13 @@ var attach_album_list = function() {
 			"parentId" : pid,
 			"id" : album_list[a].id
 		});
-	}// end for
+		/*
+		 * @todo 为相册增加二级菜单。
+		 * 二级菜单中的选项仍然是传入  album_list[a].id 指定的相册，但是会增加 二级菜单限定的标签。
+		 */
+	}// end for  album_list
+	
+	
 };// end attach_album_list
 
 attach_album_list();

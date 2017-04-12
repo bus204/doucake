@@ -31,7 +31,9 @@ window.delete_comment=function(cid){
         
         xhr.send(formData);
 };
-
+/**
+ * 快速删除本页内的回复。
+ */
 window.quick_delete_comment_this_page=function(){
     if(!confirm("删除本页全部回复，所有删除掉的内容，都无法恢复，你确定要这样做吗？")){
         return;

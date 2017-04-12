@@ -1,4 +1,8 @@
-
+/**
+ * 过滤掉 text 中emoji 表情的文本。
+ * @param {string} text 要过滤的目标文本
+ * @returns 返回过滤后的文本。
+ */
 function filterEmoji(text){
     var ranges = [
             '\ud83c[\udf00-\udfff]', 
@@ -7,12 +11,18 @@ function filterEmoji(text){
         ];
     return text.replace(new RegExp(ranges.join('|'), 'g'), '?');
 }
-
+/**
+ * 根据URL的路径判断当前是否为 图片上传页面。
+ * @param {string} pathname 
+ */
 var is_photos_album_upload=function(pathname){
         console.log("is_photos_album_upload:"+pathname);
         return (/\/photos\/album\/[\d+]\/upload/.test(pathname)  || /\//.test(pathname))&& gQueryParam["src_url"] && "true"===gQueryParam["auto_upload"];
 };
-
+/**
+ * 当前的URL QueryString 参数的字典值。
+ * @type {string}
+ */
 var gQueryParam = parseQueryString(window.location.search);
 var is_post_douban_sns=function(album){
 	if(!album){
