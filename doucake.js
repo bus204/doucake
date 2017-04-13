@@ -80,8 +80,14 @@ var is_post_douban_sns = function (albumid) {
     var _album = decodeURIComponent(albumid);
     return _album.indexOf("#") == 0;
 }
+
 /**
- * 打开upload页面，得到upload_token
+ * 获取页面上豆瓣授权的相关内容：
+ * ck
+ * token
+ * @callback {callback} get_page_callback
+ * 
+ * @todo 后续可以调整为向页面注册js，js获取页面变量和COOKIE，然后再通过window 消息 回传，避免此处额外的 做一次 https 请求。
  */
 var get_page = function (get_page_callback) {
     console.log("get_page:");
@@ -272,7 +278,10 @@ var get_group_topic_id = function () {
     var tid = tmpArray[tmpArray.length - 2];
     return tid;
 };
-
+/**
+ * 从URL中，获取页面的ID。
+ * @param {*string} url 
+ */
 var get_item_id = function (url) {
     var tmpArray = url.split("/");
     var tid = tmpArray[tmpArray.length - 2];
@@ -1087,14 +1096,19 @@ function rm_from_right_menu() {
         show_all_right_menu();
     });
 };
-
+/**
+ * 把当前页面的 相册添加到右键菜单中。
+ */
 function add_to_right_menu() {
     console.log("add_to_right_menu");
     var albumid = get_item_id(window.location.pathname);
-    chrome.runtime.sendMessage({ method: "add_to_right_menu", "albumid": albumid, "name": document.title.substring(document.title.indexOf('-') + 1) }
+    var albuminfo={};
+    albuminfo.id=albumid;
+    albuminfo.name=document.title.substring(document.title.indexOf('-') + 1);
+    albuminfo.desc=$("p.description").text();
+    chrome.runtime.sendMessage({ method: "add_to_right_menu", "albumid": albumid, "name": document.title.substring(document.title.indexOf('-') + 1),"albuminfo":albuminfo }
         , function (response) {
             console.log("add_to_right_menu callback");
-            // window.location.reload();
             show_all_right_menu();
         });
 }
