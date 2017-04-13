@@ -20,6 +20,16 @@ var post_to_guangbo_list = [{
 	name: "#我当时就凌乱了#"
 }];
 
+/**
+ * 右键菜单中的豆列
+ */
+var doulist_array = [
+	{
+		id: "45928417"
+		, name: "1024"
+	}
+];
+
 function test_selection(info, tab) {
 	console.log("test_selection");
 	console.log("info.selectionText : " + info.selectionText);
@@ -43,11 +53,23 @@ var getSnsConfIndex = function (id) {
 	}
 	return -1;
 }
-/*
- * 
- * @param {type} info @param {type} tab @returns {undefined}
+
+function addToDoulist(info, tab) {
+
+	saveImg(info, tab, 2);
+}
+
+function postDoubanGuangBo(info, tab) {
+	saveImg(info, tab, 1);
+}
+
+/**
+ * 保存图片的执行函数
+ * @param {object} info 
+ * @param {object} tab 
+ * @param {number} type - 默认，表示要上传图片到相册。1，发图片到广播；2，标识要加入到 豆列。
  */
-function saveImg(info, tab) {
+function saveImg(info, tab, type) {
 	console.log("info");
 	console.log(info);
 	console.log("tab");
@@ -68,23 +90,78 @@ function saveImg(info, tab) {
 	}, function (response) {
 		console.log("sendRequest callback " + JSON.stringify(response));
 		console.log(response);
-		var iIndex = getSnsConfIndex(info.menuItemId);
-		if (-1 != iIndex) {
-			var tmpObj = response;
-			if (0 == post_to_guangbo_list[iIndex].name.indexOf("#")) {
-				tmpObj.title = " " + post_to_guangbo_list[iIndex].name + " "
-					+ ((response && response.title) ? response.title : tab.title);
+		switch (type) {
+			case 1: {//发广播
+				var iIndex = getSnsConfIndex(info.menuItemId);
+				if (-1 != iIndex) {
+					var tmpObj = response;
+					if (0 == post_to_guangbo_list[iIndex].name.indexOf("#")) {
+						tmpObj.title = " " + post_to_guangbo_list[iIndex].name + " "
+							+ ((response && response.title) ? response.title : tab.title);
+					}
+					open_douban_guangbo_page(info, tab, tmpObj);
+				} else {
+					open_up_load_page(info, tab, response);
+				}
+				break;
 			}
-			open_douban_guangbo_page(info, tab, tmpObj);
-		} else {
-			open_up_load_page(info, tab, response);
+			case 2: {//加豆列
+				add_doulist(info, tab, response);
+				break;
+			}
+			default: {//传相片到相册
+				open_up_load_page(info, tab, response);
+			}
 		}
+
 	});
 
 };
 
+var add_doulist = function (info, tab, response) {
+	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
+	var url = "https://www.douban.com/doulist/" + info.menuItemId + "/?";
+	url = url + "auto_upload=true"//            
+		+ "&img_url=" + encodeURIComponent(img_src_url) + "&title="
+		+ encodeURIComponent(response.title ? response.title : tab.title)
+		+ "&album=" + encodeURIComponent(info.menuItemId);
+	if (response && response.pageUrl) {
+		url = url
+			+ "&src_url="
+			+ encodeURIComponent((response.pageUrl.indexOf("http") == 0 ? ""
+				: "https://")
+				+ response.pageUrl);
+	} else {
+		url = url
+			+ "&src_url="
+			+ encodeURIComponent((info.pageUrl.indexOf("http") == 0 ? ""
+				: "https://")
+				+ info.pageUrl);
+	}
+
+	var pageUrl = "";
+	if (response && response.pageUrl) {
+		pageUrl = ((response.pageUrl.indexOf("http") == 0 ? "" : "https://") + response.pageUrl);
+	} else {
+		pageUrl = ((info.pageUrl.indexOf("http") == 0 ? "" : "https://") + info.pageUrl);
+	}
+	url = url + "&src_url=" + encodeURIComponent(pageUrl);
+	url = url + "&src_tabid=" + tab.id;
+	if (response && response.author) {
+		// 把名字中的空格替换掉。
+		url = url + "&author="
+			+ encodeURIComponent(response.author.replace(/\s+/g, ""));
+	}
+
+	console.log("open upload page:  " + url);
+	chrome.tabs.create({
+		"url": url,
+		"active": false
+	});
+}
+
 var open_douban_guangbo_page = function (info, tab, response) {
-	console.log("");
+	console.log("open_douban_guangbo_page");
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
 	var url = "https://www.douban.com/";
 	url = url + "?auto_upload=true"//            
@@ -149,8 +226,8 @@ var open_up_load_page = function (info, tab, response) {
 	if (info.menuItemId.indexOf("|") > -1) {
 		albumid = info.menuItemId.substring(0, info.menuItemId.indexOf("|"));
 		tags = info.menuItemId.substring(info.menuItemId.indexOf("|") + 1);
-	}else{
-		tags="";//默认是相册名称
+	} else {
+		tags = "";//默认是相册名称
 	}
 
 	var url = "https://www.douban.com/photos/album/"
@@ -171,7 +248,7 @@ var open_up_load_page = function (info, tab, response) {
 	追加tags参数，在新页面上传成功后，自动tags .
 	*/
 	url = url + "&tags=" + encodeURIComponent(tags);
-	console.log("open upload page:  "+url);
+	console.log("open upload page:  " + url);
 	chrome.tabs.create({
 		"url": url,
 		"active": false
@@ -261,6 +338,21 @@ var attach_album_list = function () {
 		});
 	}//end for post_to_guangbo_list
 
+
+	/**
+	 * doulist
+	 */
+	for (var a in doulist_array) {
+		chrome.contextMenus.create({
+			"title": "豆列:"+doulist_array[a].name,
+			"contexts": ["image"],
+			"onclick": addToDoulist,
+			"parentId": pid,
+			"id": doulist_array[a].id
+		});
+	}
+
+
 	/*
 	相册列表
 	*/
@@ -292,7 +384,7 @@ var attach_album_list = function () {
 				"contexts": ["image"],
 				"onclick": saveImg,
 				"parentId": pid,
-				"id": album_list[a].id+"|"+album_list[a].name
+				"id": album_list[a].id + "|" + album_list[a].name
 			});
 		}
 	}// end for  album_list

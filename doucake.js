@@ -33,7 +33,7 @@ function setCookie(c_name, value, expiredays) {
         ((expiredays === null) ? "" : ";expires=" + exdate.toUTCString());
 }
 
-function getCookie(c_name) {
+function _getCookie(c_name) {
     var c_value = document.cookie;
     var c_start = c_value.indexOf(" " + c_name + "=");
     if (c_start === -1) {
@@ -52,6 +52,7 @@ function getCookie(c_name) {
     }
     return c_value;
 }
+window.getCookie=_getCookie;
 /**
  * 按照URL QueryString的格式，来解析 vhref，但是并没有做 UrlDecode. 
  * @param {string} vhref 
