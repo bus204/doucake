@@ -17,7 +17,7 @@ function filterEmoji(text) {
  */
 var is_photos_album_upload = function (pathname) {
     console.log("is_photos_album_upload:" + pathname);
-    return (/\/photos\/album\/[\d+]\/upload/.test(pathname) || "/" == pathname) && gQueryParam["src_url"] && "true" === gQueryParam["auto_upload"];
+    return (/\/photos\/album\/\d+\/upload/.test(pathname) || "/" == pathname) && gQueryParam["src_url"] && "true" === gQueryParam["auto_upload"];
 };
 
 var is_doulist_page = function (pathname) {
@@ -545,6 +545,7 @@ if (is_photos_album_upload(window.location.pathname)) {
 
 var add_item_to_list = function () {
     console.log("add_item_to_list");
+    //throw new Error("just break;");
     goParam.ck = getCookie('ck').replace(/\"/g, "");
     var _doulistid = gQueryParam["album"];
     var _url = "https://www.douban.com/j/doulist/" + _doulistid + "/additem";
@@ -562,19 +563,25 @@ var add_item_to_list = function () {
         _obj.tags = decodeURIComponent(gQueryParam["tags"]);
     }
     __comment = __comment + " ;" + JSON.stringify(_obj);
+    var __data = {
+        dl_id: _doulistid
+        , sid: ""
+        , skind: ""
+        , surl: _surl
+        , comment: __comment
+        , ck: goParam.ck
+    };
+    console.log("__data:"+JSON.stringify(__data));
     $.ajax({
         type: 'POST'
         , url: _url
-        , data:{
-            dl_id: _doulistid
-            , sid: ""
-            , skind: ""
-            , surl: _surl
-            , comment: __comment
-            , ck: goParam.ck
-        }
-        ,success:function(){
-            window.location.href="https://www.douban.com/doulist/" + _doulistid ;
+        , data: __data
+        , success: function () {
+            /**
+             * @param sort - 排序规则；time 按照添加时间倒序排列，这样可以看到最近添加的内容
+             * @param sub_type - 内容：网页；相册 。
+             */
+            window.location.href = "https://www.douban.com/doulist/" + _doulistid+"/?sort=time&sub_type=";
         }
         ,
     });

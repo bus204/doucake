@@ -122,7 +122,7 @@ var add_doulist = function (info, tab, response) {
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
 	var url = "https://www.douban.com/doulist/" + info.menuItemId + "/?";
 	url = url + "auto_upload=true"//            
-		+ "&img_url=" + encodeURIComponent(img_src_url) + "&title="
+		+ "&img_url=" + encodeURIComponent(img_src_url.replace(/\.webp/g,".jpg")) + "&title="
 		+ encodeURIComponent(response.title ? response.title : tab.title)
 		+ "&album=" + encodeURIComponent(info.menuItemId);
 	if (response && response.pageUrl) {
@@ -332,7 +332,7 @@ var attach_album_list = function () {
 		chrome.contextMenus.create({
 			"title": post_to_guangbo_list[a].name,
 			"contexts": ["image"],
-			"onclick": saveImg,
+			"onclick": postDoubanGuangBo,
 			"parentId": pid,
 			"id": post_to_guangbo_list[a].id
 		});
