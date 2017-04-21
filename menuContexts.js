@@ -122,7 +122,7 @@ var add_doulist = function (info, tab, response) {
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
 	var url = "https://www.douban.com/doulist/" + info.menuItemId + "/?";
 	url = url + "auto_upload=true"//            
-		+ "&img_url=" + encodeURIComponent(img_src_url.replace(/\.webp/g,".jpg")) + "&title="
+		+ "&img_url=" + encodeURIComponent(img_src_url.replace(/\.webp/g, ".jpg")) + "&title="
 		+ encodeURIComponent(response.title ? response.title : tab.title)
 		+ "&album=" + encodeURIComponent(info.menuItemId);
 	if (response && response.pageUrl) {
@@ -321,6 +321,23 @@ var attach_album_list = function () {
 	}, function () {
 		console.log("chrome.contextMenus.create");
 	});
+
+
+	/**
+	 * doulist
+	 */
+	for (var a in doulist_array) {
+		chrome.contextMenus.create({
+			"title": "豆列:" + doulist_array[a].name
+			, "contexts": ["image"]
+			, "onclick": addToDoulist
+			//,"parentId": pid
+			, "id": doulist_array[a].id
+		});
+	}
+
+
+
 	console.log(window.localStorage.getItem("album_list"));
 	var tmp = "album_list=" + window.localStorage.getItem("album_list");
 	eval(tmp);
@@ -339,19 +356,6 @@ var attach_album_list = function () {
 	}//end for post_to_guangbo_list
 
 
-	/**
-	 * doulist
-	 */
-	for (var a in doulist_array) {
-		chrome.contextMenus.create({
-			"title": "豆列:"+doulist_array[a].name,
-			"contexts": ["image"],
-			"onclick": addToDoulist,
-			"parentId": pid,
-			"id": doulist_array[a].id
-		});
-	}
-
 
 	/*
 	相册列表
@@ -365,13 +369,22 @@ var attach_album_list = function () {
 			var _tmpMenuContextId = chrome.contextMenus.create({
 				"title": "保存图片到 " + album_list[a].name,
 				"contexts": ["image"],
-				"onclick": saveImg,//这里应该有事件吗？
+				//"onclick": saveImg,//这里应该有事件吗？
 				"parentId": pid,
 				"id": album_list[a].id
 			});
+			/// 对于这种有 二级标签的，需要 设置一个额外的二级菜单，表示没有标签。
+			chrome.contextMenus.create({
+				"title": album_list[a].name,
+				"contexts": ["image"],
+				"onclick": saveImg,
+				"parentId": _tmpMenuContextId,
+				"id": album_list[a].id 
+			});
+			/// 添加其它的二级标签。
 			for (var t in album_list[a].tags) {
 				chrome.contextMenus.create({
-					"title": "保存图片到 " + album_list[a].tags[t],
+					"title": album_list[a].tags[t],
 					"contexts": ["image"],
 					"onclick": saveImg,
 					"parentId": _tmpMenuContextId,
@@ -379,6 +392,7 @@ var attach_album_list = function () {
 				});
 			}
 		} else {
+			//没有二级标签。
 			chrome.contextMenus.create({
 				"title": "保存图片到 " + album_list[a].name,
 				"contexts": ["image"],
@@ -563,17 +577,29 @@ var add_to_right_menu = function (request, sender, sendResponse) {
 	};
 	if (request.albuminfo) {
 		//相册描述，切分，得到可选的列表标签
-		//每行一个
+		//使用相册描述中，使用 英文冒号开头的那一行，然后 使用英文的分号作为 切分的 关键字。
 		var _desc = request.albuminfo.desc;
 		console.log("_desc:" + _desc);
 		album.tags = new Array();
-		album.tags.push(request.name);
 		var _desc_array = _desc.split("\n");
 		for (var index in _desc_array) {
 			if (0 == _desc_array[index].length) {
+				//空行跳过
 				continue;
 			}
-			album.tags.push(_desc_array[index]);
+			if (_desc_array[index].indexOf(":") != 0) {
+				//不是以 : 开头，跳过
+				continue;
+			} else {
+				//跳过开头的 英文冒号，可能有多个，所以使用正则表达式来替换。
+				var _tag_array = _desc_array[index].replace(/^:+/g, "").split(',');
+				for (var ti in _tag_array) {
+					if (_tag_array[ti].length == 0) {
+						continue;
+					}
+					album.tags.push(_tag_array[ti]);
+				}
+			}
 		}
 	}
 	album_list.push(album);

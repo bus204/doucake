@@ -545,7 +545,6 @@ if (is_photos_album_upload(window.location.pathname)) {
 
 var add_item_to_list = function () {
     console.log("add_item_to_list");
-    //throw new Error("just break;");
     goParam.ck = getCookie('ck').replace(/\"/g, "");
     var _doulistid = gQueryParam["album"];
     var _url = "https://www.douban.com/j/doulist/" + _doulistid + "/additem";
@@ -581,7 +580,7 @@ var add_item_to_list = function () {
              * @param sort - 排序规则；time 按照添加时间倒序排列，这样可以看到最近添加的内容
              * @param sub_type - 内容：网页；相册 。
              */
-            window.location.href = "https://www.douban.com/doulist/" + _doulistid+"/?sort=time&sub_type=";
+            window.location.href = "https://www.douban.com/doulist/" + _doulistid+"?sort=time&sub_type=";
         }
         ,
     });
