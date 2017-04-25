@@ -17,8 +17,24 @@ window.get_douban_status_link = function(aoReq) {
 	console.log(link);
 	retObj.link = link;
 	console.log("aoReq.albumid : " + aoReq.albumid);
-
-	if (/^\/.*status\/\d+\/$/.test(window.location.pathname)) {// 豆瓣广播的详情页
+	if(/^\/doulist\/\d+\/$/.test(window.location.pathname)){//豆列页面
+		console.log("doulist : "+window.location.pathname);
+		$("img[src='" + aoReq.img_url + "']").each(function() {
+			var _item=$(this).parents("div.doulist-item");
+			var _desc=_item.find("blockquote.comment").text();
+			_desc=_desc.substring(_desc.indexOf("评语：")+3);
+			console.log("desc : "+_desc);
+			var _url=_desc.substring(0,_desc.indexOf(" ;"));
+			var _jobj="var __jsonobj="+_desc.substring(_desc.indexOf(" ;")+2);
+			console.log("_jobj:"+_jobj);
+			eval(_jobj);
+			console.log("__jsonobj :"+JSON.stringify(__jsonobj));
+			retObj.author=__jsonobj.author;
+			retObj.title=__jsonobj.title;
+			retObj.image_url=aoReq.img_url.replace(/medium/g,"large")
+			link=_url;
+		});
+	}else if (/^\/.*status\/\d+\/$/.test(window.location.pathname)) {// 豆瓣广播的详情页
 		var douban_uid = $("div.status-item").attr("data-uid");
 		retObj.author = douban_uid;
 		author = $("div.text").children("a");
@@ -106,19 +122,11 @@ window.get_douban_status_link = function(aoReq) {
 	console.log("link:" + link);
 	retObj.link = link;
 
-	if (aoReq.albumid == "_test_selection") {
-		// 这里插入一点代码，来获取页面的dataUrl
-		var aoParam = {};
-		aoParam.src = aoReq.img_url;
-		downloadFirst(aoParam, function(param) {
-			console.log("get_douban_status_link,downloadFirst,callback");
-			console.log(param);
-			retObj = param;
-			return retObj;
-		});
-	} else {
-		return retObj;
-	}
+	console.log("retObj:"+JSON.stringify(retObj));
+
+	//throw new Error("just break");
+	return retObj;
+	
 };
 
 window.get_weibo_detail_link = function(aoReq) {

@@ -1426,16 +1426,22 @@ if (/^\/group\/$/.test(window.location.pathname)) {
     });
 }
 
-
+/**
+ * 如果是在相片页面，把 desc 中的文字，变成链接。
+ */
 if (is_photos_photo()) {
     console.log("相片页");
     $("span#display").each(function () {
-        var url = $(this).html();
-        $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>");
+        var _desc = $(this).html();
+        console.log(_desc);
+        var url=_desc.substring(0,_desc.indexOf(" "));
+        $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>"+"&nbsp;"+_desc.substring(_desc.indexOf(" ")));
     });
 }
 
-
+/**
+ * 屏蔽某些我不想看到的广播。
+ */
 if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.com") > -1) {
     var __expand_all = function () {
         $("div.status-wrapper").show();
@@ -1562,12 +1568,16 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 
 }
 
+/**
+ * 判断一个用户是否已经关注了我，
+ * 如果已经关注了我，在用户的 个人介绍 div 中展示特殊字符。
+ */
 if (/\/people\/.*?/.test(window.location.pathname)) {
     console.log("in someone index");
     if ($("textarea[name='bp_text']").length > 0) {
         console.log(window.location.pathname + " has follow you");
-        var _html = $("span#remarkDisplay").html();
-        $("span#remarkDisplay").html(_html + "&nbsp;√");
+        var _html = $("div.user-info").html();
+        $("div.user-info").html("===√<br/>"+_html);
     }
 }
 
@@ -1575,5 +1585,5 @@ if (/\/people\/.*?/.test(window.location.pathname)) {
 if (is_group_topic()) {
     $("div.sharing").hide();
 }
-
+// 不要引导去装豆瓣APP。
 $("div.top-nav-doubanapp").hide();

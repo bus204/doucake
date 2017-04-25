@@ -200,7 +200,9 @@ var open_douban_guangbo_page = function (info, tab, response) {
 var open_up_load_page = function (info, tab, response) {
 
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
-
+	if(response.image_url && response.image_url.length>0){
+		img_src_url=response.image_url;
+	}
 	var pageUrl = "";
 	if (response && response.pageUrl) {
 		pageUrl = ((response.pageUrl.indexOf("http") == 0 ? "" : "https://") + response.pageUrl);
