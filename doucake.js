@@ -1434,8 +1434,14 @@ if (is_photos_photo()) {
     $("span#display").each(function () {
         var _desc = $(this).html();
         console.log(_desc);
-        var url=_desc.substring(0,_desc.indexOf(" "));
-        $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>"+"&nbsp;"+_desc.substring(_desc.indexOf(" ")));
+        var url=_desc;
+        if(_desc.indexOf(" ")>-1){
+            url=_desc.substring(0,_desc.indexOf(" "));
+            $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>"+"&nbsp;"+_desc.substring(_desc.indexOf(" ")));
+        }else{
+            $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>"+"&nbsp;");
+        }
+        
     });
 }
 
