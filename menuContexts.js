@@ -21,14 +21,22 @@ var post_to_guangbo_list = [{
 }];
 
 /**
- * 右键菜单中的豆列
+ * 右键菜单中的豆列.
+ * @prop id：唯一标识。
+ * @prop name：展示在右键菜单中的文案。
+ * @prop domain_rule 基于原页面域名的规则。当规则命中时，使用 指向的doulist，否则，就是用 @ref default.
+ * @prop default 默认的doulist ID。
  */
-var doulist_array = [
-	{
-		id: "45928417"
+var doulist_map = {
+	"1024":{
+		id: "1024"
 		, name: "1024"
-	}
-];
+		, default:"45928417"
+		, domain_rule:{
+			"www.douban.com":"45956630"
+		}
+	}//end 1024
+};
 
 function test_selection(info, tab) {
 	console.log("test_selection");
@@ -120,11 +128,22 @@ function saveImg(info, tab, type) {
 
 var add_doulist = function (info, tab, response) {
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
-	var url = "https://www.douban.com/doulist/" + info.menuItemId + "/?";
+	//在默认的情况下，使用 id 对应的default  doulist
+	//然后根据 域名的规则，来匹配 具体的 doulist。
+	var doulistid= doulist_map[info.menuItemId].default;
+	if(response.pageUrl){
+		var _a=document.createElement("a");
+		_a.href=response.pageUrl;
+		var _domainname=_a.hostname;
+		if(doulist_map[info.menuItemId].domain_rule[_domainname]){
+			doulistid=doulist_map[info.menuItemId].domain_rule[_domainname];
+		}
+	}
+	var url = "https://www.douban.com/doulist/" +doulistid + "/?";
 	url = url + "auto_upload=true"//            
 		+ "&img_url=" + encodeURIComponent(img_src_url.replace(/\.webp/g, ".jpg")) + "&title="
 		+ encodeURIComponent(response.title ? response.title : tab.title)
-		+ "&album=" + encodeURIComponent(info.menuItemId);
+		+ "&album=" + encodeURIComponent(doulistid);
 	if (response && response.pageUrl) {
 		url = url
 			+ "&src_url="
@@ -328,13 +347,13 @@ var attach_album_list = function () {
 	/**
 	 * doulist
 	 */
-	for (var a in doulist_array) {
+	for (var a in doulist_map) {
 		chrome.contextMenus.create({
-			"title": "豆列:" + doulist_array[a].name
+			"title": "豆列:" + doulist_map[a].name
 			, "contexts": ["image"]
 			, "onclick": addToDoulist
 			//,"parentId": pid
-			, "id": doulist_array[a].id
+			, "id": doulist_map[a].id
 		});
 	}
 
