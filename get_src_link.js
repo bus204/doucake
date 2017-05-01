@@ -200,25 +200,40 @@ window.get_twitter_detail_link = function (aoReq) {
 	console.log("get_twitter_detail_link img src:" + aoReq.img_url);
 	var retObj = {};
 	var link = window.location.href;
-	var answerBody = $("img[src='" + aoReq.img_url + "']").parents(
-		"div.content");
-	if (answerBody) {
-		console.log("find the detail element");
-		if (answerBody.find("small.time").find("a").attr("href")) {
-			console.log("small.time.a.href");
-			link = "https://twitter.com/"
-				+ answerBody.find("small.time").find("a").attr("href");
-			retObj.author = answerBody.find("span.username").first().text();
-			retObj.title = retObj.author
-				+ ":"
-				+ answerBody.find("p.tweet-text").text().replace(/pic.*$/g,
-					"");
-		} else {
-			console.log("permalink-header.username");
-			retObj.title = and
+
+	if (/\/.*?\/status\/\d+/.test(window.location.pathname)) {
+		/**
+		 * 当前页面的链接，就是twitter的详情页面，直接从URL中解析twitter的ID
+		 */
+		console.log("now is details link:" + window.location.pathname);
+		link = window.location.href;
+		retObj.author = "@" + window.location.pathname.substring(1, window.location.pathname.indexOf("/", 1));
+	} else {
+		/**
+		 * 从页面DOM中解析。
+		 */
+		var answerBody = $("img[src='" + aoReq.img_url + "']").parents(
+			"div.content");
+		if (answerBody) {
+			console.log("find the detail element");
+			if (answerBody.find("small.time").find("a").attr("href")) {
+				console.log("small.time.a.href");
+				link = "https://twitter.com/"
+					+ answerBody.find("small.time").find("a").attr("href");
+				retObj.author = answerBody.find("span.username").first().text();
+				retObj.title = retObj.author
+					+ ":"
+					+ answerBody.find("p.tweet-text").text().replace(/pic.*$/g,
+						"");
+			} else {
+				console.log("permalink-header.username");
+				//retObj.title = and
+			}
 		}
 	}
 	retObj.link = link;
+	console.log("retObj:" + JSON.stringify(retObj));
+	//throw new Error("xxxx");
 	return retObj;
 }
 

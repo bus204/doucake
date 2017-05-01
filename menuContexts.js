@@ -16,8 +16,11 @@ var post_to_guangbo_list = [{
 	id: "#42gif",
 	name: "#42gif#"
 }, {
+	id: "#42gif",
+	name: "#42gif#"
+}, {
 	id: "#42wtf",
-	name: "#我当时就凌乱了#"
+	name: "#哎呦#"
 }];
 
 /**
@@ -28,12 +31,12 @@ var post_to_guangbo_list = [{
  * @prop default 默认的doulist ID。
  */
 var doulist_map = {
-	"1024":{
+	"1024": {
 		id: "1024"
 		, name: "1024"
-		, default:"45928417"
-		, domain_rule:{
-			"www.douban.com":"45956630"
+		, default: "45928417"
+		, domain_rule: {
+			"www.douban.com": "45956630"
 		}
 	}//end 1024
 };
@@ -130,16 +133,16 @@ var add_doulist = function (info, tab, response) {
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
 	//在默认的情况下，使用 id 对应的default  doulist
 	//然后根据 域名的规则，来匹配 具体的 doulist。
-	var doulistid= doulist_map[info.menuItemId].default;
-	if(response.pageUrl){
-		var _a=document.createElement("a");
-		_a.href=response.pageUrl;
-		var _domainname=_a.hostname;
-		if(doulist_map[info.menuItemId].domain_rule[_domainname]){
-			doulistid=doulist_map[info.menuItemId].domain_rule[_domainname];
+	var doulistid = doulist_map[info.menuItemId].default;
+	if (response.pageUrl) {
+		var _a = document.createElement("a");
+		_a.href = response.pageUrl;
+		var _domainname = _a.hostname;
+		if (doulist_map[info.menuItemId].domain_rule[_domainname]) {
+			doulistid = doulist_map[info.menuItemId].domain_rule[_domainname];
 		}
 	}
-	var url = "https://www.douban.com/doulist/" +doulistid + "/?";
+	var url = "https://www.douban.com/doulist/" + doulistid + "/?";
 	url = url + "auto_upload=true"//            
 		+ "&img_url=" + encodeURIComponent(img_src_url.replace(/\.webp/g, ".jpg")) + "&title="
 		+ encodeURIComponent(response.title ? response.title : tab.title)
@@ -219,8 +222,8 @@ var open_douban_guangbo_page = function (info, tab, response) {
 var open_up_load_page = function (info, tab, response) {
 
 	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
-	if(response.image_url && response.image_url.length>0){
-		img_src_url=response.image_url;
+	if (response.image_url && response.image_url.length > 0) {
+		img_src_url = response.image_url;
 	}
 	var pageUrl = "";
 	if (response && response.pageUrl) {
@@ -400,7 +403,7 @@ var attach_album_list = function () {
 				"contexts": ["image"],
 				"onclick": saveImg,
 				"parentId": _tmpMenuContextId,
-				"id": album_list[a].id 
+				"id": album_list[a].id
 			});
 			/// 添加其它的二级标签。
 			for (var t in album_list[a].tags) {
