@@ -52,7 +52,7 @@ function _getCookie(c_name) {
     }
     return c_value;
 }
-window.getCookie=_getCookie;
+window.getCookie = _getCookie;
 /**
  * 按照URL QueryString的格式，来解析 vhref，但是并没有做 UrlDecode. 
  * @param {string} vhref 
@@ -1103,11 +1103,11 @@ function rm_from_right_menu() {
 function add_to_right_menu() {
     console.log("add_to_right_menu");
     var albumid = get_item_id(window.location.pathname);
-    var albuminfo={};
-    albuminfo.id=albumid;
-    albuminfo.name=document.title.substring(document.title.indexOf('-') + 1);
-    albuminfo.desc=$("p.description").text();
-    chrome.runtime.sendMessage({ method: "add_to_right_menu", "albumid": albumid, "name": document.title.substring(document.title.indexOf('-') + 1),"albuminfo":albuminfo }
+    var albuminfo = {};
+    albuminfo.id = albumid;
+    albuminfo.name = document.title.substring(document.title.indexOf('-') + 1);
+    albuminfo.desc = $("p.description").text();
+    chrome.runtime.sendMessage({ method: "add_to_right_menu", "albumid": albumid, "name": document.title.substring(document.title.indexOf('-') + 1), "albuminfo": albuminfo }
         , function (response) {
             console.log("add_to_right_menu callback");
             show_all_right_menu();
@@ -1219,33 +1219,40 @@ if ("www.douban.com" == window.location.hostname //
 var hide_group_intro = function () {
     if ($("div.group-intro")) {
         $("div.group-intro").hide();
-        if ($("a#switch_group_intro")[0]) {
-            $("a#switch_group_intro")[0].innerHTML = "查看小组介绍";
-            $("a#switch_group_intro")[0].removeEventListener('click');
-            $("a#switch_group_intro")[0].addEventListener('click', show_group_intro);
-        }
-
+        $("a#hide_group_intro").hide();
+        $("a#show_group_intro").show();
     }
 }
 var show_group_intro = function () {
     if ($("div.group-intro")) {
         $("div.group-intro").show();
-        $("a#switch_group_intro")[0].innerHTML = "关闭小组介绍";
-        $("a#switch_group_intro")[0].removeEventListener('click');
-        $("a#switch_group_intro")[0].addEventListener('click', hide_group_intro);
+        $("a#hide_group_intro").show();
+        $("a#show_group_intro").hide();
     }
 }
 
 if ($("div.group-rec") && $("div.group-board")) {
-    var _a = document.createElement("a");
-    _a.href = "javascript:void(0)";
-    _a.innerHTML = "查看小组介绍";
-    _a.addEventListener('click', show_group_intro);
-    _a.id = "switch_group_intro";
-    if ($("div.group-board")[0]) {
-        $("div.group-board")[0].insertBefore(_a, $("div.group-rec")[0]);
+    {
+        var _a = document.createElement("a");
+        _a.href = "javascript:void(0)";
+        _a.innerHTML = "查看小组介绍";
+        _a.addEventListener('click', show_group_intro);
+        _a.id = "show_group_intro";
+        if ($("div.group-board")[0]) {
+            $("div.group-board")[0].insertBefore(_a, $("div.group-rec")[0]);
+        }
     }
-
+    {
+        var _a = document.createElement("a");
+        _a.href = "javascript:void(0)";
+        _a.innerHTML = "关闭小组介绍";
+        _a.addEventListener('click', hide_group_intro);
+        _a.id = "hide_group_intro";
+        if ($("div.group-board")[0]) {
+            $("div.group-board")[0].insertBefore(_a, $("div.group-rec")[0]);
+        }
+    }
+    $("a#hide_group_intro").hide();
 }
 
 hide_group_intro();
@@ -1434,14 +1441,14 @@ if (is_photos_photo()) {
     $("span#display").each(function () {
         var _desc = $(this).html();
         console.log(_desc);
-        var url=_desc;
-        if(_desc.indexOf(" ")>-1){
-            url=_desc.substring(0,_desc.indexOf(" "));
-            $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>"+"&nbsp;"+_desc.substring(_desc.indexOf(" ")));
-        }else{
-            $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>"+"&nbsp;");
+        var url = _desc;
+        if (_desc.indexOf(" ") > -1) {
+            url = _desc.substring(0, _desc.indexOf(" "));
+            $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>" + "&nbsp;" + _desc.substring(_desc.indexOf(" ")));
+        } else {
+            $(this).html("<a href='" + url + "' target=_blank>" + url + "</a>" + "&nbsp;");
         }
-        
+
     });
 }
 
@@ -1583,7 +1590,7 @@ if (/\/people\/.*?/.test(window.location.pathname)) {
     if ($("textarea[name='bp_text']").length > 0) {
         console.log(window.location.pathname + " has follow you");
         var _html = $("div.user-info").html();
-        $("div.user-info").html("===√<br/>"+_html);
+        $("div.user-info").html("===√<br/>" + _html);
     }
 }
 
