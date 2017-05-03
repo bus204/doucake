@@ -260,8 +260,10 @@ window.uploadPic = function (aoUploadParam) {
                                     post_guangbo(aoUploadParam);
                                 } else {
                                     console.log("aoUploadParam:" + aoUploadParam);
-                                    add_desc_save(aoUploadParam);
                                     console.log("aoUploadParam:" + JSON.stringify(aoUploadParam));
+                                    add_desc_save(aoUploadParam,function(){
+                                        window.location.replace('https://www.douban.com/photos/photo/' + aoUploadParam.id+"/");
+                                    });
                                 }
 
 
@@ -349,7 +351,9 @@ window.fileEntryFile = function (file) {
                     fileEntryFile(file);
                     return;
                 }
-                add_desc_save(picObj);
+                add_desc_save(picObj,function(){
+                                        window.location.replace('https://www.douban.com/photos/photo/' + picObj.id+"/");
+                });
             } else {//服务器无正常响应，重试
                 console.log("xhr.status:" + xhr.status + " 重试");
                 fileEntryFile(file);
@@ -370,7 +374,7 @@ window.fileEntryFile = function (file) {
  在成功调用addphoto_draft后，为图片增加描述，然后保存
 @param aoParam
  */
-var add_desc_save = function (aoParam) {
+var add_desc_save = function (aoParam,add_desc_save_callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://www.douban.com/photos/album/' + goParam.album + "/upload", true);
     var desc = window.location.origin + window.location.pathname + " " + aoParam.src + " " + gQueryParam["src_url"];
@@ -414,13 +418,11 @@ var add_desc_save = function (aoParam) {
         console.log("xhr.status:" + xhr.status);
         if (xhr.readyState === 4 && xhr.status === 200) {
             console.log("add_desc_save OK");
-            clicked_button.innerHTML = "SAVING";
-
             aoParam.comment = desc;
 
             if (null !== add_desc_save_callback) {
                 //如果有指定回调句柄，那么就执行这个函数
-                //add_desc_save_callback();
+                add_desc_save_callback();
             } else {
                 return;
             }
@@ -542,7 +544,9 @@ if (is_photos_album_upload(window.location.pathname)) {
     }
 }
 
-
+/**
+ * 从当前的URL中解析参数，把指定的内容添加到当前的doulist中。
+ */
 var add_item_to_list = function () {
     console.log("add_item_to_list");
     goParam.ck = getCookie('ck').replace(/\"/g, "");
