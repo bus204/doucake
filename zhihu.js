@@ -192,9 +192,9 @@ var getNextAnchorName = function(offset) {
     var defaultAnswer = window.location.hash;
     console.log("default hash:" + defaultAnswer);
     //页面中，答案的锚点队列
-    var anchorArray = $("div.zm-item-answer");
+    var anchorArray = $("button[aria-owns]");
 
-    console.log("target answer array length" + anchorArray.length);
+    console.log("target answer array length:" + anchorArray.length);
     if (0 === anchorArray.length) {
         return "";
     }
@@ -205,9 +205,9 @@ var getNextAnchorName = function(offset) {
         console.log(
                 "INDEX:" + index//
                 + " name:"//
-                + anchorArray.get(index).getAttribute("data-aid")
+                + anchorArray.get(index).getAttribute("id")
                 );//end console
-        if (defaultAnswer === "#answer-" + anchorArray.get(index).getAttribute("data-aid")) {
+        if (defaultAnswer === "#"+anchorArray.get(index).getAttribute("id")) {
             break;
         }
     }
@@ -215,13 +215,13 @@ var getNextAnchorName = function(offset) {
 
     var nextAns = "";
     if (index < anchorArray.length && index + offset < anchorArray.length && index + offset > 0) {
-        nextAns = anchorArray.get(index + offset).getAttribute("data-aid");
+        nextAns = anchorArray.get(index + offset).getAttribute("id");
     } else {
-        nextAns = anchorArray.get(0).getAttribute("data-aid");
+        nextAns = anchorArray.get(0).getAttribute("id");
     }
     console.log("next index:" + nextAns);
-    window.location.href = window.location.pathname + window.location.search + "#answer-" + nextAns;
-    $("[data-aid='" + nextAns + "']")[0].scrollIntoView();
+    window.location.href = window.location.pathname + window.location.search + "#" + nextAns;
+    $("button[id='" + nextAns + "']")[0].scrollIntoView();
 };
 
 /**

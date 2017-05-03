@@ -248,46 +248,24 @@ window.get_zhihu_answer_link = function (aoReq) {
 		return retObj;
 	}
 	var bHasFind = false;
-	var answerBody = $("img[src='" + aoReq.img_url + "']").parents(
-		".zm-item-rich-text");// .parent("div").parent("div");
-	if (answerBody) {
-		var dataEntryUrl = answerBody.attr("data-entry-url");
-		console.log("data-entry-url " + dataEntryUrl);
-		if (dataEntryUrl) {
-			console.log("try to find author");
-			link = dataEntryUrl;
-			if (0 == link.indexOf("/")) {
-				link = window.location.hostname + link;
-			}
-			retObj.link = link;
-			retObj.author = answerBody.attr("data-author-name");
-			if (!retObj.author) {
-				var author = answerBody.parent().find("a.author-link");
-				if (author) {
-					retObj.author = author.html();
-				}
-			}
-			retObj.title = answerBody.parents("div .feed-main").find("h2")
-				.find("a").text().replace(/\n/g, "").replace(/^\s+/g, "")
-				.replace(/\s+$/g, "");
-			console.log(retObj);
-			return retObj;
-		}
+
+	if(/\/collection\/\d+/.test(window.location.pathname)){
+		console.log("知乎收藏栏");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
+		retObj.title=zm_item.find("h2").find("a").text();
+		retObj.author=zm_item.find("a.author-link").text();
+		retObj.link=window.location.hostname +zm_item.find("link[itemprop='url']").attr("href");
+		console.log("retObj under zhihu collect : "+JSON.stringify(retObj));
+		return retObj;
 	}
-	answerBody = $("img[src='" + aoReq.img_url + "']").parents(".ContentItem");
-	if (answerBody) {
-		console.log("img .parents.ContentItem");
-		link = answerBody.children(".ContentItem-title").children("a").attr(
-			"href");
-		if (link) {
-			if (0 == link.indexOf("/")) {
-				link = window.location.hostname + link;
-			}
-			retObj.link = link;
-		}
-		var authorElem = answerBody.find("div .AuthorInfo-name").find(
-			"a.UserLink-link");
-		retObj.author = authorElem.text();
+
+	if(/\/question\/\d+/.test(window.location.pathname)){
+		console.log("问题列表页面");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.AnswerItem");
+		retObj.title=document.title;
+		retObj.author=zm_item.find("img.AuthorInfo-avatar").attr("alt");
+		retObj.link=window.location.hostname +zm_item.find("div.ContentItem-time").find("a").attr("href");
+		console.log("retObj under zhihu question answer : "+JSON.stringify(retObj));
 		return retObj;
 	}
 };
