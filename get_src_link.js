@@ -248,7 +248,15 @@ window.get_zhihu_answer_link = function (aoReq) {
 		return retObj;
 	}
 	var bHasFind = false;
-
+	if("/"==window.location.pathname){
+		console.log("知乎首页");
+		var zm_item=$("img[src='" + aoReq.img_url + "']").parents("div.feed-item");
+		retObj.title=zm_item.find("a.question_link").text();
+		retObj.author=zm_item.find("span.author-link-line").find("a.author-link").text();
+		retObj.link=window.location.hostname +zm_item.find("a.question_link").attr("href");
+		console.log(" 知乎首页 retObj : "+JSON.stringify(retObj));
+		return retObj;
+	}
 	if(/\/collection\/\d+/.test(window.location.pathname)){
 		console.log("知乎收藏栏");
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
