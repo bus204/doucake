@@ -1600,3 +1600,19 @@ if (is_group_topic()) {
 }
 // 不要引导去装豆瓣APP。
 $("div.top-nav-doubanapp").hide();
+
+/**
+ * 在Instagram的网页中，展示图片，能够右键菜单选择。
+ */
+function show_ins_page(){
+    console.log("under instagram :" + $("div._ovg3g").length);
+    $("div._ovg3g").css("position", "relative");
+    if(0==$("div._ovg3g").length){
+        setTimeout(show_ins_page,100);
+    }else{
+        setTimeout(show_ins_page,500);
+    }
+}
+if ("www.instagram.com" == window.location.hostname) {
+    show_ins_page();
+}

@@ -36,7 +36,7 @@ var doulist_map = {
 		, name: "1024"
 		, default: "45928417"
 		, domain_rule: {
-			"www.douban.com": "45956630"
+			"www.douban.com": "45972652"
 		}
 	}//end 1024
 };
@@ -334,7 +334,7 @@ var album_list = null;
 /**
  * 鼠标菜单上追加列表。
  */
-var attach_album_list = function () {
+var add_menuContext = function () {
 	chrome.contextMenus.removeAll();
 	/*
 	 * 增加页面上的右键菜单
@@ -430,7 +430,7 @@ var attach_album_list = function () {
 
 };// end attach_album_list
 
-attach_album_list();
+add_menuContext();
 /*
  * 监听外部的查询和添加
  */
@@ -574,7 +574,7 @@ var rm_from_right_menu = function (request, sender, sendResponse) {
 			break;
 		}
 	}
-	attach_album_list();
+	add_menuContext();
 	sendResponse();
 };
 
@@ -629,7 +629,7 @@ var add_to_right_menu = function (request, sender, sendResponse) {
 	album_list.push(album);
 	window.localStorage.setItem("album_list", JSON.stringify(album_list));
 	console.log(JSON.stringify(album_list));
-	attach_album_list();
+	add_menuContext();
 	sendResponse();
 };
 
