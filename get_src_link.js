@@ -148,7 +148,6 @@ window.get_douban_status_link = function (aoReq) {
 	return retObj;
 
 };
-
 window.get_weibo_detail_link = function (aoReq) {
 	var link = window.location.href;
 	var author = "";
@@ -237,6 +236,29 @@ window.get_twitter_detail_link = function (aoReq) {
 	return retObj;
 }
 
+window.get_instagram_detail_link = function (aoReq) {
+	var retObj = {};
+	if (/\/p\/.+/.test(window.location.pathname)) {
+		console.log("already in detail page");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div._tjnr4");
+		retObj.author = zm_item.find("header:eq(0)").find("div:eq(0)").find("a:eq(0)").text();
+		retObj.link = window.location.href;
+		
+	} else {
+		var article = $("img[src='" + aoReq.img_url + "']").parents("article._h2d1o");
+		retObj.author = article.find("header").find("div:eq(0)").find("a:eq(0)").text();
+		retObj.title = "instagram @" + retObj.author + "";
+		retObj.link = window.location.origin + article.find("header").children("a:eq(1)").attr("href");
+
+	}
+	retObj.pageUrl=retObj.link;
+	console.log("retObj under instagram detail page : " + JSON.stringify(retObj));
+	if (!retObj.author || retObj.author.length == 0) {
+		throw new Error("parse instagram error");
+	} else {
+		return retObj;
+	}
+}
 window.get_zhihu_answer_link = function (aoReq) {
 	var retObj = {};
 	console.log("get_zhihu_answer_link img src:" + aoReq.img_url);
@@ -248,32 +270,32 @@ window.get_zhihu_answer_link = function (aoReq) {
 		return retObj;
 	}
 	var bHasFind = false;
-	if("/"==window.location.pathname){
+	if ("/" == window.location.pathname) {
 		console.log("知乎首页");
-		var zm_item=$("img[src='" + aoReq.img_url + "']").parents("div.feed-item");
-		retObj.title=zm_item.find("a.question_link").text();
-		retObj.author=zm_item.find("span.author-link-line").find("a.author-link").text();
-		retObj.link=window.location.hostname +zm_item.find("a.question_link").attr("href");
-		console.log(" 知乎首页 retObj : "+JSON.stringify(retObj));
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.feed-item");
+		retObj.title = zm_item.find("a.question_link").text();
+		retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
+		retObj.link = window.location.hostname + zm_item.find("a.question_link").attr("href");
+		console.log(" 知乎首页 retObj : " + JSON.stringify(retObj));
 		return retObj;
 	}
-	if(/\/collection\/\d+/.test(window.location.pathname)){
+	if (/\/collection\/\d+/.test(window.location.pathname)) {
 		console.log("知乎收藏栏");
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
-		retObj.title=zm_item.find("h2").find("a").text();
-		retObj.author=zm_item.find("a.author-link").text();
-		retObj.link=window.location.hostname +zm_item.find("link[itemprop='url']").attr("href");
-		console.log("retObj under zhihu collect : "+JSON.stringify(retObj));
+		retObj.title = zm_item.find("h2").find("a").text();
+		retObj.author = zm_item.find("a.author-link").text();
+		retObj.link = window.location.hostname + zm_item.find("link[itemprop='url']").attr("href");
+		console.log("retObj under zhihu collect : " + JSON.stringify(retObj));
 		return retObj;
 	}
 
-	if(/\/question\/\d+/.test(window.location.pathname)){
+	if (/\/question\/\d+/.test(window.location.pathname)) {
 		console.log("问题列表页面");
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.AnswerItem");
-		retObj.title=document.title;
-		retObj.author=zm_item.find("img.AuthorInfo-avatar").attr("alt");
-		retObj.link=window.location.hostname +zm_item.find("div.ContentItem-time").find("a").attr("href");
-		console.log("retObj under zhihu question answer : "+JSON.stringify(retObj));
+		retObj.title = document.title;
+		retObj.author = zm_item.find("img.AuthorInfo-avatar").attr("alt");
+		retObj.link = window.location.hostname + zm_item.find("div.ContentItem-time").find("a").attr("href");
+		console.log("retObj under zhihu question answer : " + JSON.stringify(retObj));
 		return retObj;
 	}
 };
