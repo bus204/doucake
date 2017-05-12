@@ -243,6 +243,7 @@ window.get_instagram_detail_link = function (aoReq) {
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div._tjnr4");
 		retObj.author = zm_item.find("header:eq(0)").find("div:eq(0)").find("a:eq(0)").text();
 		retObj.link = window.location.href;
+		retObj.title = "instagram @" + retObj.author +" " + document.title;
 		
 	} else {
 		var article = $("img[src='" + aoReq.img_url + "']").parents("article._h2d1o");
