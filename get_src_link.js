@@ -284,7 +284,7 @@ window.get_zhihu_answer_link = function (aoReq) {
 		console.log("知乎收藏栏");
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
 		retObj.title = zm_item.find("h2").find("a").text();
-		retObj.author = zm_item.find("a.author-link").text();
+		retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
 		retObj.link = window.location.hostname + zm_item.find("link[itemprop='url']").attr("href");
 		console.log("retObj under zhihu collect : " + JSON.stringify(retObj));
 		return retObj;
@@ -297,6 +297,15 @@ window.get_zhihu_answer_link = function (aoReq) {
 		retObj.author = zm_item.find("img.AuthorInfo-avatar").attr("alt");
 		retObj.link = window.location.hostname + zm_item.find("div.ContentItem-time").find("a").attr("href");
 		console.log("retObj under zhihu question answer : " + JSON.stringify(retObj));
+		return retObj;
+	}
+	if (/\/people\/.+\//.test(window.location.pathname)) {
+		console.log("个人动态页");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.List-item");
+		retObj.title = zm_item.find("h2.ContentItem-title").find("a").text();
+		retObj.author = zm_item.find("span.AuthorInfo-name").find("a.UserLink-link").text();
+		retObj.link = window.location.hostname + zm_item.find("h2.ContentItem-title").find("a").attr("href");
+		console.log("retObj under zhihu collect : " + JSON.stringify(retObj));
 		return retObj;
 	}
 };
