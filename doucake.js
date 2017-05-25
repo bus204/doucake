@@ -965,13 +965,20 @@ var methodManager = {
         else {
             console.log("域名未知");
             response.pageUrl = window.location.href;
-            // return ;
         }
-        console.log("-----------callback-------------");
-        console.log(response);
 
-        //        throw new Error("-----------callback-------------");
-
+        if(response.author.length>0){
+            console.log("response.author:"+response.author);
+            var author_prefix="#"+response.author.replace(/@/g,'')+"#";
+            if(!response.title){
+                response.title=author_prefix;
+            }else if(-1==response.title.indexOf(author_prefix)){
+                response.title=author_prefix+" "+response.title;
+            }
+            console.log("response.title:"+response.title);
+        }
+        console.log("-----------callback-------------:"+JSON.stringify(response));
+        // throw new Error("-----------callback-------------");
         sendResponse(response);
     }// end call call_get_src_url
 };
@@ -1623,3 +1630,15 @@ function show_ins_page(){
 if ("www.instagram.com" == window.location.hostname) {
     show_ins_page();
 }
+
+
+function hide_douban_advertisement(){
+    $("div[data-sell-type]").each(
+        function(){
+            console.log($(this).attr("id")+":"+$(this).attr("data-sell-type"));
+            $(this).hide();
+        }
+    );
+    setTimeout(hide_douban_advertisement,1000);
+}
+hide_douban_advertisement();
