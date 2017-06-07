@@ -295,7 +295,11 @@ window.post_guangbo = function (aoUploadParam) {
     var formData = new FormData();
     formData.append("uploaded", aoUploadParam.url);
     formData.append("ck", goParam.ck);
-    formData.append("comment", decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g, "") + " " + decodeURIComponent(gQueryParam["title"]));
+    var _srcUrl=decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g, "");
+    if(-1!=_srcUrl.indexOf("www.zhihu.com")){
+        _srcUrl="https://link.zhihu.com/?target="+encodeURIComponent(_srcUrl);
+    }
+    formData.append("comment", _srcUrl + " " + decodeURIComponent(gQueryParam["title"]));
     console.log("formData:" + JSON.stringify(formData));
     console.log(formData);
     xhr.onreadystatechange = function () {

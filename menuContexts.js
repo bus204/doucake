@@ -11,7 +11,7 @@ var post_to_guangbo_list = [{
 	name: "发豆瓣广播"
 }, {
 	id: "#beauty_stranger",
-	name: "#42路#"
+	name: "#42路# #不开心,就开车#"
 }, {
 	id: "#42gif",
 	name: "#42gif#"
