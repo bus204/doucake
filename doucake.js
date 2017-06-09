@@ -1635,7 +1635,7 @@ if ("www.instagram.com" == window.location.hostname) {
 function hide_douban_advertisement(){
     $("div[data-sell-type]").each(
         function(){
-            console.log($(this).attr("id")+":"+$(this).attr("data-sell-type"));
+            //console.log($(this).attr("id")+":"+$(this).attr("data-sell-type"));
             $(this).hide();
         }
     );

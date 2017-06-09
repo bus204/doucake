@@ -37,7 +37,7 @@ var doulist_map = {
 	"1024": {
 		id: "1024"
 		, name: "1024"
-		, default: "45928417"
+		, default: "46034615"//"45928417"
 		, domain_rule: {
 			"www.douban.com": "45972652"
 		}
