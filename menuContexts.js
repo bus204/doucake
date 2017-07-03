@@ -10,14 +10,14 @@ var post_to_guangbo_list = [{
 	id: "#douban_guangbo",
 	name: "发豆瓣广播"
 }, {
+	id: "#42_low_card",
+	name: "#42路# #低俗广播#"
+},  {
 	id: "#beauty_stranger",
-	name: "#42路# #不开心,就开车#"
+	name: "#42路# #漂亮的陌生人#"
 }, {
 	id: "#42gif",
-	name: "#42gif#"
-}, {
-	id: "#42gif",
-	name: "#42gif#"
+	name: "#42gif#" 
 }, {
 	id: "#42wtf",
 	name: "#哎呦#"

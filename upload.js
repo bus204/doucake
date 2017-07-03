@@ -232,7 +232,7 @@ window.uploadPic = function (aoUploadParam) {
                         console.log("xhr.port2addphoto_draft:" + e);
                     };
 
-                    var __comment = decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g, "") + " " + decodeURIComponent(gQueryParam["title"]);
+                    var __comment = decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g, "") + " " + decodeURIComponent(gQueryParam["title"]).replace(/@/g,"");
                     xhr.upload.onprogress = function (e) {
                         if (e.lengthComputable) {
                             var _progress = (e.loaded / e.total) * 100;
@@ -299,7 +299,7 @@ window.post_guangbo = function (aoUploadParam) {
     if(-1!=_srcUrl.indexOf("www.zhihu.com")){
         _srcUrl="https://link.zhihu.com/?target="+encodeURIComponent(_srcUrl);
     }
-    formData.append("comment", _srcUrl + " " + decodeURIComponent(gQueryParam["title"]));
+    formData.append("comment", _srcUrl + " " + decodeURIComponent(gQueryParam["title"]).replace(/@/g,""));
     console.log("formData:" + JSON.stringify(formData));
     console.log(formData);
     xhr.onreadystatechange = function () {

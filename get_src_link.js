@@ -250,12 +250,16 @@ window.get_instagram_detail_link = function (aoReq) {
 		var article = $("img[src='" + aoReq.img_url + "']").parents("article._h2d1o");
 		retObj.author = article.find("header").find("div:eq(0)").find("a:eq(0)").text();
 		//retObj.title = "instagram :#" + retObj.author + "#";
-		retObj.link = window.location.origin + article.find("header").children("a:eq(1)").attr("href");
+		var tmpLink=article.children("div:eq(1)").children("div:eq(1)").children("a:eq(0)").attr("href");
+		if(!tmpLink){
+			throw new Error("parse instagram error");
+		}
+		retObj.link = window.location.origin + tmpLink;
 
 	}
 	retObj.pageUrl=retObj.link;
 	console.log("retObj under instagram detail page : " + JSON.stringify(retObj));
-	if (!retObj.author || retObj.author.length == 0) {
+	if (!retObj.author || retObj.author.length == 0 || !retObj.pageUrl ) {
 		throw new Error("parse instagram error");
 	} else {
 		return retObj;
