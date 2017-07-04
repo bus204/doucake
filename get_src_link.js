@@ -152,10 +152,11 @@ window.get_weibo_detail_link = function (aoReq) {
 	var link = window.location.href;
 	var author = "";
 	var title = "";
-	$("img[src='" + aoReq.img_url + "']").each(
+	var imgUrl=aoReq.img_url.replace(/http:/g,"").replace(/https:/g,"");
+	$("img[src='" + imgUrl + "']").each(
 		function () {
 			console.log("不在微博详情页");
-			var WB_feed_expand = $(this).parents("div.WB_feed_expand");
+			var WB_feed_expand = $(this).parents("div.WB_detail");
 			if (WB_feed_expand) {
 				link = WB_feed_expand.find("a.S_txt2").attr("href");
 				author = WB_feed_expand.find("div.WB_info")
@@ -192,6 +193,7 @@ window.get_weibo_detail_link = function (aoReq) {
 	retObj.author = author;
 	retObj.link = link;
 	retObj.title = title;
+	console.log("retObj:" + JSON.stringify(retObj));
 	return retObj;
 };
 
