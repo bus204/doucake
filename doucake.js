@@ -857,7 +857,19 @@ function getSelectionHtml() {
 }
 
 var methodManager = {
-    load_album_list: function (request, sender, sendResponse) {
+    setTopics:function(request,sender,response){
+        console.log("request:"+JSON.stringify(request));
+        console.log("sender:"+JSON.stringify(sender));
+        console.log("response:"+JSON.stringify(response));
+        console.log("activeElement:"+document.activeElement.outerHTML);
+        if(!document.activeElement.value){
+            document.activeElement.value =request.data.name;
+        }else{
+            document.activeElement.value+=request.data.name;
+        }
+        document.activeElement.innerHTML+=request.data.name;
+    }
+    ,load_album_list: function (request, sender, sendResponse) {
         var tmp = "var album_list=" + window.localStorage.getItem("album_list");
         eval(tmp);
         console.log(JSON.stringify(album_list));

@@ -77,6 +77,25 @@ function postDoubanGuangBo(info, tab) {
 	saveImg(info, tab, 1);
 }
 
+function setTopics(info, tab){
+	console.log("setTopics info:"+JSON.stringify(info));
+	console.log("setTopics tab:"+JSON.stringify(tab));
+	id=info.menuItemId.replace(/.topic/g,"");
+	var iIndex = getSnsConfIndex(id);
+	if (-1 == iIndex) {
+		console.log('index illegel ,do nothing');
+		return;
+	}
+	var topic= post_to_guangbo_list[iIndex].name;
+	chrome.tabs.sendRequest(tab.id, {
+		method: "setTopics",
+		data:post_to_guangbo_list[iIndex]
+	}, function(response){
+		//set success
+	}
+	);
+}
+
 /**
  * 保存图片的执行函数
  * @param {object} info 
@@ -344,7 +363,7 @@ var add_menuContext = function () {
 	 */
 	var pid = chrome.contextMenus.create({
 		"title": "保存到豆瓣",
-		"contexts": ["image", "selection"]
+		"contexts": ["image", "editable"]
 	}, function () {
 		console.log("chrome.contextMenus.create");
 	});
@@ -358,11 +377,9 @@ var add_menuContext = function () {
 			"title": "豆列:" + doulist_map[a].name
 			, "contexts": ["image"]
 			, "onclick": addToDoulist
-			//,"parentId": pid
 			, "id": doulist_map[a].id
 		});
 	}
-
 
 
 	console.log(window.localStorage.getItem("album_list"));
@@ -381,6 +398,16 @@ var add_menuContext = function () {
 			"id": post_to_guangbo_list[a].id
 		});
 	}//end for post_to_guangbo_list
+	for (var a in post_to_guangbo_list) {
+		chrome.contextMenus.create({
+			"title": post_to_guangbo_list[a].name,
+			"contexts": ["editable"],
+			"onclick": setTopics,
+			"parentId": pid,
+			"id": post_to_guangbo_list[a].id+".topic"
+		});
+	}//end for post_to_guangbo_list
+
 
 
 
