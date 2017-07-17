@@ -148,54 +148,63 @@ window.get_douban_status_link = function (aoReq) {
 	return retObj;
 
 };
-window.get_weibo_detail_link = function (aoReq) {
-	var link = window.location.href;
-	var author = "";
-	var title = "";
-	var imgUrl=aoReq.img_url.replace(/http:/g,"").replace(/https:/g,"");
-	$("img[src='" + imgUrl + "']").each(
-		function () {
-			console.log("不在微博详情页");
-			var WB_feed_expand = $(this).parents("div.WB_detail");
-			if (WB_feed_expand) {
-				link = WB_feed_expand.find("a.S_txt2").attr("href");
-				author = WB_feed_expand.find("div.WB_info")
-					.find("a.S_txt1").attr("title");
-				title = author
-					+ "的微博:"
-					+ WB_feed_expand.find("div.WB_text").text()
-						.replace(/\n/g, "").replace(/^\s+/g, "")
-						.replace(/\s+$/g, "");
-				;
-				console.log("WB_feed_expand link:" + link + " author:"
-					+ author);
-			}
-			if (!link || !author) {
-				console.log("ELSE  WB_feed_expand");
-				link = $(this).parents("div.WB_detail").find("div.WB_from")
-					.find("a[title]").attr("href");
-				author = $(this).parents("div.WB_detail").find(
-					"div.WB_info").find("a.W_f14").html();
-				title = author
-					+ "的微博:"
-					+ $(this).parents("div.WB_detail").find(
-						"div.WB_text").text().replace(/\n/g, "")
-						.replace(/^\s+/g, "").replace(/\s+$/g, "");
-			}
-			return;
-		});
-
-	if (link.indexOf("http://") < 0) {
-		link = window.location.hostname + link;
-	}
-	console.log("link:" + link);
+function get_weibo_detail_link__(aoReq) {
 	var retObj = {};
-	retObj.author = author;
-	retObj.link = link;
-	retObj.title = title;
+	var imgUrl = aoReq.img_url.replace(/http:/g, "").replace(/https:/g, "");
+	imgUrl = aoReq.img_url;
+	switch (window.location.hostname) {
+		case "photo.weibo.com": {
+			console.log("under photo.weibo.com");
+			$("img[src='" + imgUrl + "']").each(function(){
+				console.log("页面中找到图片了：" + imgUrl);
+				var m_photoItem=$(this).parents("div.F_cols_main");
+				retObj.link=m_photoItem.find("p.time").find("a:eq(0)").attr("href");
+				retObj.title=m_photoItem.find("p.desc").find("em").text();
+				retObj.author=$("div.about").find("p.name").find("a").attr("title");
+			});
+			break;
+		}
+		default: {
+			$("img[src='" + imgUrl + "']").each(
+				function () {
+					console.log("页面中找到图片了：" + imgUrl);
+					var WB_feed_expand = $(this).parents("div.WB_detail");
+					if (WB_feed_expand) {
+						retObj.link = WB_feed_expand.find("a.S_txt2").attr("href");
+						retObj.author = WB_feed_expand.find("div.WB_info")
+							.find("a.S_txt1").attr("title");
+						retObj.title = retObj.author
+							+ "的微博:"
+							+ WB_feed_expand.find("div.WB_text").text()
+								.replace(/\n/g, "").replace(/^\s+/g, "")
+								.replace(/\s+$/g, "");
+						;
+						console.log("WB_feed_expand link:" + retObj.link + " author:"
+							+ retObj.author);
+					}
+					if (!retObj.link || !retObj.author) {
+						console.log("ELSE  WB_feed_expand");
+						retObj.link = $(this).parents("div.WB_detail").find("div.WB_from")
+							.find("a[title]").attr("href");
+						retObj.author = $(this).parents("div.WB_detail").find(
+							"div.WB_info").find("a.W_f14").html();
+						retObj.title = retObj.author
+							+ "的微博:"
+							+ $(this).parents("div.WB_detail").find(
+								"div.WB_text").text().replace(/\n/g, "")
+								.replace(/^\s+/g, "").replace(/\s+$/g, "");
+					}
+					return;
+				});
+		}//end default
+	}//end swtich
+	if (retObj.link.indexOf("http") < 0) {
+		retObj.link = window.location.hostname + retObj.link;
+	}
 	console.log("retObj:" + JSON.stringify(retObj));
 	return retObj;
 };
+window.get_weibo_detail_link = get_weibo_detail_link__;
 
 window.get_twitter_detail_link = function (aoReq) {
 	console.log("get_twitter_detail_link img src:" + aoReq.img_url);
@@ -237,6 +246,32 @@ window.get_twitter_detail_link = function (aoReq) {
 	//throw new Error("xxxx");
 	return retObj;
 }
+/**
+ * 在 pinterest.com 下获取页面的链接
+ */
+function get_pinterest_detail_link_(aoReq) {
+	var retObj = {};
+	if (/\/pin\/.+/.test(window.location.pathname)) {//当前已经是详情页面
+		console.log("already in detail page");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div._tjnr4");
+		retObj.author = "";
+		retObj.link = window.location.href;
+		retObj.title = document.title;
+
+	} else {
+		var article = $("img[src='" + aoReq.img_url + "']").parents("div.pinLink pinImageWrapper");
+		retObj.author = "";
+		var tmpLink = article.children("a:eq(0)").attr("href");
+		if (!tmpLink) {
+			throw new Error("parse pinterest error");
+		}
+		retObj.link = window.location.origin + tmpLink;
+
+	}
+	return retObj;
+}
+window.get_pinterest_detail_link = get_pinterest_detail_link_;
+
 
 window.get_instagram_detail_link = function (aoReq) {
 	var retObj = {};
@@ -246,22 +281,22 @@ window.get_instagram_detail_link = function (aoReq) {
 		retObj.author = zm_item.find("header:eq(0)").find("div:eq(0)").find("a:eq(0)").text();
 		retObj.link = window.location.href;
 		retObj.title =// "instagram :#" + retObj.author +"# " + 
-		document.title;
-		
+			document.title;
+
 	} else {
 		var article = $("img[src='" + aoReq.img_url + "']").parents("article._h2d1o");
 		retObj.author = article.find("header").find("div:eq(0)").find("a:eq(0)").text();
 		//retObj.title = "instagram :#" + retObj.author + "#";
-		var tmpLink=article.children("div:eq(1)").children("div:eq(1)").children("a:eq(0)").attr("href");
-		if(!tmpLink){
+		var tmpLink = article.children("div:eq(1)").children("div:eq(1)").children("a:eq(0)").attr("href");
+		if (!tmpLink) {
 			throw new Error("parse instagram error");
 		}
 		retObj.link = window.location.origin + tmpLink;
 
 	}
-	retObj.pageUrl=retObj.link;
+	retObj.pageUrl = retObj.link;
 	console.log("retObj under instagram detail page : " + JSON.stringify(retObj));
-	if (!retObj.author || retObj.author.length == 0 || !retObj.pageUrl ) {
+	if (!retObj.author || retObj.author.length == 0 || !retObj.pageUrl) {
 		throw new Error("parse instagram error");
 	} else {
 		return retObj;
