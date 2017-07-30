@@ -327,7 +327,11 @@ window.get_zhihu_answer_link = function (aoReq) {
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
 		retObj.title = zm_item.find("h2").find("a").text();
 		retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
-		retObj.link = window.location.hostname + zm_item.find("link[itemprop='url']").attr("href");
+		var tmpLink= zm_item.find("link[itemprop='url']").attr("href");
+		if(tmpLink.indexOf("/")==0){
+			tmpLink= window.location.hostname + tmpLink;
+		}
+		retObj.link = tmpLink;
 		console.log("retObj under zhihu collect : " + JSON.stringify(retObj));
 		return retObj;
 	}
