@@ -275,19 +275,22 @@ function get_pinterest_detail_link_(aoReq) {
 }
 window.get_pinterest_detail_link = get_pinterest_detail_link_;
 
-
+/**
+ * 解析instagram的页面。
+ * 利用 srcset 模糊匹配，找到页面元素。
+ */
 window.get_instagram_detail_link = function (aoReq) {
 	var retObj = {};
 	if (/\/p\/.+/.test(window.location.pathname)) {
 		console.log("already in detail page");
-		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div._tjnr4");
+		var zm_item = $("img[srcset*='" + aoReq.img_url + "']").parents("div._tjnr4");
 		retObj.author = zm_item.find("header:eq(0)").find("div:eq(0)").find("a:eq(0)").text();
 		retObj.link = window.location.href;
 		retObj.title =// "instagram :#" + retObj.author +"# " + 
 			document.title;
 
 	} else {
-		var article = $("img[src='" + aoReq.img_url + "']").parents("article._h2d1o");
+		var article = $("img[srcset*='" + aoReq.img_url + "']").parents("article._h2d1o");
 		retObj.author = article.find("header").find("div:eq(0)").find("a:eq(0)").text();
 		//retObj.title = "instagram :#" + retObj.author + "#";
 		var tmpLink = article.children("div:eq(1)").children("div:eq(1)").children("a:eq(0)").attr("href");
