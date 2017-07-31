@@ -168,7 +168,10 @@ function get_weibo_detail_link__(aoReq) {
 			$("img[src='" + imgUrl + "']").each(
 				function () {
 					console.log("页面中找到图片了：" + imgUrl);
-					var WB_feed_expand = $(this).parents("div.WB_detail");
+					var WB_feed_expand = $(this).parents("div.WB_feed_expand");
+					if(!WB_feed_expand){
+						 $(this).parents("div.WB_detail")
+					}
 					if (WB_feed_expand) {
 						retObj.link = WB_feed_expand.find("a.S_txt2").attr("href");
 						retObj.author = WB_feed_expand.find("div.WB_info")

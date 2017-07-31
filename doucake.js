@@ -930,7 +930,15 @@ var methodManager = {
 
         var response = request;
         response.pageUrl = window.location.href;
-        if(window.location.hostname.indexOf("instagram.com")>-1){
+        if(window.location.hostname.indexOf("pinterest.com")>-1){
+            console.log("pinterest.com");
+            var retObj=get_pinterest_detail_link(request);
+            response = retObj;
+            response.pageUrl = retObj.link;
+            if (retObj.author) {
+                response.author = retObj.author;
+            }
+        }else if(window.location.hostname.indexOf("instagram.com")>-1){
             console.log("instagram.com");
             var retObj=get_instagram_detail_link(request);
             response = retObj;
