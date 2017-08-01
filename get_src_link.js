@@ -331,11 +331,25 @@ window.get_zhihu_answer_link = function (aoReq) {
 	if (/\/collection\/\d+/.test(window.location.pathname)) {
 		console.log("知乎收藏栏");
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
-		retObj.title = zm_item.find("h2").find("a").text();
-		retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
-		var tmpLink= zm_item.find("link[itemprop='url']").attr("href");
-		if(tmpLink.indexOf("/")==0){
-			tmpLink= window.location.hostname + tmpLink;
+		var type = zm_item.attr("data-type");
+		var tmpLink="";
+		switch (type) {
+			case "pin": {
+				retObj.author=zm_item.find("div.author-info").find("span.author-link-line").find("a").text();
+				retObj.title=zm_item.find("div.pin-content").text();
+				tmpLink=zm_item.find("div.zm-meta-panel").find("a[target='_blank']").attr("href");
+				break;
+			}
+			case "Answer":
+			default:
+				{
+					retObj.title = zm_item.find("h2").find("a").text();
+					retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
+					tmpLink = zm_item.find("link[itemprop='url']").attr("href");
+				}
+		}
+		if (tmpLink.indexOf("/") == 0) {
+			tmpLink = window.location.hostname + tmpLink;
 		}
 		retObj.link = tmpLink;
 		console.log("retObj under zhihu collect : " + JSON.stringify(retObj));
