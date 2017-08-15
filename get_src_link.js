@@ -290,7 +290,7 @@ window.get_instagram_detail_link = function (aoReq) {
 			document.title;
 
 	} else {
-		var article = $("img[srcset*='" + aoReq.img_url + "']").parents("article._h2d1o");
+		var article = $("img[srcset*='" + aoReq.img_url + "']").parents("article");
 		retObj.author = article.find("header").find("div:eq(0)").find("a:eq(0)").text();
 		//retObj.title = "instagram :#" + retObj.author + "#";
 		var tmpLink = article.children("div:eq(1)").children("div:eq(1)").children("a:eq(0)").attr("href");
