@@ -981,6 +981,13 @@ var methodManager = {
             if (retObj.author) {
                 response.author = retObj.author;
             }
+        } else if (window.location.hostname.indexOf("hupu.com")>-1){
+            console.log("hupu.com");
+            var retObj=get_hupu_detail_link(request);
+            response.pageUrl = retObj.link;
+            if (retObj.author) {
+                response.author = retObj.author;
+            }
         }
         else {
             console.log("域名未知");

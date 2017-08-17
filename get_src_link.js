@@ -148,6 +148,11 @@ window.get_douban_status_link = function (aoReq) {
 	return retObj;
 
 };
+
+/**
+ * weibo
+ * @param {} aoReq 
+ */
 function get_weibo_detail_link__(aoReq) {
 	var retObj = {};
 	var imgUrl = aoReq.img_url.replace(/http:/g, "").replace(/https:/g, "");
@@ -209,6 +214,25 @@ function get_weibo_detail_link__(aoReq) {
 };
 window.get_weibo_detail_link = get_weibo_detail_link__;
 
+
+/**
+ * 获取虎扑页面。
+ * 
+ * hupu不允许跨域获取图片。。。。
+ * 
+ */
+window.get_hupu_detail_link__ = function (aoReq) {
+	console.log("get_twitter_detail_link img src:" + aoReq.img_url);
+	var retObj = {};
+	var link = window.location.href;
+	retObj.link = link;
+	retObj.author=window.location.hostname;
+	retObj.title=document.title.replace(/^\(.*\)/g,"");
+	console.log("retObj:" + JSON.stringify(retObj));
+	return retObj;
+}
+window.get_hupu_detail_link=get_hupu_detail_link__;
+
 window.get_twitter_detail_link = function (aoReq) {
 	console.log("get_twitter_detail_link img src:" + aoReq.img_url);
 	var retObj = {};
@@ -244,7 +268,7 @@ window.get_twitter_detail_link = function (aoReq) {
 			}
 		}
 	}
-	retObj.link = link;
+	retObj.link = link.replace(/\/\//g,"/");
 	console.log("retObj:" + JSON.stringify(retObj));
 	//throw new Error("xxxx");
 	return retObj;
