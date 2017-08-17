@@ -255,8 +255,12 @@ window.get_twitter_detail_link = function (aoReq) {
 			console.log("find the detail element");
 			if (answerBody.find("small.time").find("a").attr("href")) {
 				console.log("small.time.a.href");
-				link = "https://twitter.com/"
-					+ answerBody.find("small.time").find("a").attr("href");
+				var tmpLink=answerBody.find("small.time").find("a").attr("href");
+				if(tmpLink.indexOf("/")==0){
+					link="https://twitter.com"+tmpLink;
+				}else{
+					link="https://twitter.com/"+tmpLink;
+				}
 				retObj.author = answerBody.find("span.username").first().text();
 				retObj.title = retObj.author
 					+ ":"
@@ -264,11 +268,10 @@ window.get_twitter_detail_link = function (aoReq) {
 						"");
 			} else {
 				console.log("permalink-header.username");
-				//retObj.title = and
 			}
 		}
 	}
-	retObj.link = link.replace(/\/\//g,"/");
+	retObj.link = link;
 	console.log("retObj:" + JSON.stringify(retObj));
 	//throw new Error("xxxx");
 	return retObj;
