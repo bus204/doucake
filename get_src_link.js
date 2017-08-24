@@ -310,8 +310,8 @@ window.get_instagram_detail_link = function (aoReq) {
 	var retObj = {};
 	if (/\/p\/.+/.test(window.location.pathname)) {
 		console.log("already in detail page");
-		var zm_item = $("img[srcset*='" + aoReq.img_url + "']").parents("div._hm7pe");
-		retObj.author = zm_item.find("header:eq(0)").find("div:eq(0)").find("a:eq(0)").text();
+		var zm_item = $("img[srcset*='" + aoReq.img_url + "']").parents("article");
+		retObj.author = zm_item.find("header:eq(0)").find("a[title]").text();
 		retObj.link = window.location.href;
 		retObj.title =// "instagram :#" + retObj.author +"# " + 
 			document.title;
