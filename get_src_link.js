@@ -348,10 +348,17 @@ window.get_zhihu_answer_link = function (aoReq) {
 	var bHasFind = false;
 	if ("/" == window.location.pathname) {
 		console.log("知乎首页");
-		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.feed-item");
-		retObj.title = zm_item.find("a.question_link").text();
-		retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
-		retObj.link = window.location.hostname + zm_item.find("a.question_link").attr("href");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.Feed");
+		if(zm_item){
+			retObj.title = zm_item.find("h2.ContentItem-title").find("a").text();
+			retObj.link = zm_item.find("h2.ContentItem-title").find("a").attr("href");
+			if(0==retObj.link.indexOf("//")){
+				retObj.link="https:"+retObj.link;
+			}else if(0==retObj.link.indexOf("/")){
+				retObj.link=window.location.hostname + retObj.link;
+			}
+			retObj.author = zm_item.find("div.AuthorInfo-content").find("span.UserLink").find("a.UserLink-link").text();
+		}
 		console.log(" 知乎首页 retObj : " + JSON.stringify(retObj));
 		return retObj;
 	}
