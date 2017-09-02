@@ -22,8 +22,8 @@ var post_to_guangbo_list = [{
 	id: "#42wtf",
 	name: "#哎呦#"
 }, {
-	id: "#盗图",
-	name: "#盗图#"
+	id: "#42账经#",
+	name: "#42账经#"
 }];
 
 /**
