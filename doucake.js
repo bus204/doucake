@@ -1632,6 +1632,7 @@ if (/\/people\/.*?/.test(window.location.pathname)) {
         console.log(window.location.pathname + " has follow you");
         var _html = $("div.user-info").html();
         $("div.user-info").html("===√<br/>" + _html);
+        document.title="<<" +document.title;
     }
 }
 
