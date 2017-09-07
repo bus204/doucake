@@ -514,16 +514,16 @@ if (is_photos_album_upload(window.location.pathname)) {
             }
 
             $("li.isay-pic").children("a").trigger("click");//激活 发照片的标签
-            //$("li.isay-pic").children("a")[0].click();//激活 发照片的标签
-            //$("li.isay-pic")[0].click();//激活 发照片的标签
-            //$("li.isay-pic").trigger("click");//激活 发照片的标签
             console.log("click");
             $("#isay-cont").trigger("focus");//模拟聚焦
             console.log("focus");
-            $("#isay-cont").text("trigger");
-            //$("#isay-cont")[0].focus();//模拟聚焦
-
-            //throw new Error("just break");
+            
+            var _srcUrl=decodeURIComponent(gQueryParam["src_url"]).replace(/#.*/g, "");
+            if(-1!=_srcUrl.indexOf("www.zhihu.com")){
+                _srcUrl="https://link.zhihu.com/?target="+encodeURIComponent(_srcUrl);
+            }
+            $("#isay-cont").text(_srcUrl + " " + decodeURIComponent(gQueryParam["title"]).replace(/@/g,""));
+            
         } else {
             console.log("is_post_douban_sns false");
         }
