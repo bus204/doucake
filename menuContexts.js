@@ -213,7 +213,11 @@ var add_doulist = function (info, tab, response) {
 
 var open_douban_guangbo_page = function (info, tab, response) {
 	console.log("open_douban_guangbo_page");
-	var img_src_url = info.srcUrl.replace(/http:/g, "https:");
+	var img_src_url=info.srcUrl;
+	if (response.image_url && response.image_url.length > 0) {
+		img_src_url = response.image_url;
+	}
+	img_src_url =img_src_url.replace(/http:/g, "https:");
 	var url = "https://www.douban.com/";
 	url = url + "?auto_upload=true"//            
 		+ "&img_url=" + encodeURIComponent(img_src_url) + "&title="
