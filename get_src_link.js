@@ -308,18 +308,18 @@ window.get_pinterest_detail_link = get_pinterest_detail_link_;
  */
 window.get_instagram_detail_link = function (aoReq) {
 	var retObj = {};
+	var article = $("img[srcset*='" + aoReq.img_url + "']").parents("article");
+	article=$("img[src='" + aoReq.img_url + "']").parents("article");
 	if (/\/p\/.+/.test(window.location.pathname)) {
 		console.log("already in detail page");
-		var zm_item = $("img[srcset*='" + aoReq.img_url + "']").parents("article");
-		retObj.author = zm_item.find("header:eq(0)").find("a[title]").text();
+		retObj.author = article.find("header:eq(0)").find("a[title]").text();
 		retObj.link = window.location.href;
 		retObj.title =// "instagram :#" + retObj.author +"# " + 
 			document.title;
 
 	} else {
-		var article = $("img[srcset*='" + aoReq.img_url + "']").parents("article");
 		retObj.author = article.find("header").find("a[title]").text();
-		//retObj.title = "instagram :#" + retObj.author + "#";
+		console.log("retObj.author:"+retObj.author);
 		var tmpLink = article.children("div:eq(1)").children("div:eq(1)").children("a:eq(0)").attr("href");
 		if (!tmpLink) {
 			throw new Error("parse instagram error");
