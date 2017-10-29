@@ -156,11 +156,10 @@ window.get_douban_status_link = function (aoReq) {
 function get_weibo_detail_link__(aoReq) {
 	var retObj = {};
 	var imgUrl = aoReq.img_url.replace(/http:/g, "").replace(/https:/g, "");
-	imgUrl = aoReq.img_url;
 	switch (window.location.hostname) {
 		case "photo.weibo.com": {
 			console.log("under photo.weibo.com");
-			$("img[src='" + imgUrl + "']").each(function(){
+			$("img[src$='" + imgUrl + "']").each(function(){
 				console.log("页面中找到图片了：" + imgUrl);
 				var m_photoItem=$(this).parents("div.F_cols_main");
 				retObj.link=m_photoItem.find("p.time").find("a:eq(0)").attr("href");
@@ -170,7 +169,7 @@ function get_weibo_detail_link__(aoReq) {
 			break;
 		}
 		default: {
-			$("img[src='" + imgUrl + "']").each(
+			$("img[src$='" + imgUrl + "']").each(
 				function () {
 					console.log("页面中找到图片了：" + imgUrl);
 					var WB_feed_expand = $(this).parents("div.WB_feed_expand");
