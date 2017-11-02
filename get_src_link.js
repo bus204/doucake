@@ -308,10 +308,16 @@ window.get_pinterest_detail_link = get_pinterest_detail_link_;
 window.get_instagram_detail_link = function (aoReq) {
 	var retObj = {};
 	var article = $("img[srcset*='" + aoReq.img_url + "']").parents("article");
-	article=$("img[src='" + aoReq.img_url + "']").parents("article");
+	if(!article){
+		article=$("img[src='" + aoReq.img_url + "']").parents("article");
+	}
+	if(!article){
+		throw new Error("parse instagram error, cannot find article");
+	}
+	
 	if (/\/p\/.+/.test(window.location.pathname)) {
 		console.log("already in detail page");
-		retObj.author = article.find("header:eq(0)").find("a[title]").text();
+		retObj.author = article.find("header:eq(0)").find("div:eq(1)").find("a[title]").text();
 		retObj.link = window.location.href;
 		retObj.title =// "instagram :#" + retObj.author +"# " + 
 			document.title;
