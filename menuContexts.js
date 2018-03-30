@@ -16,20 +16,11 @@ var post_to_guangbo_list = [{
 	id: "#beauty_stranger",
 	name: "#42路# #漂亮的陌生人#"
 }, {
-	id: "#42gif",
-	name: "#42gif#" 
-}, {
 	id: "#42wtf",
 	name: "#哎呦#"
-}, {
-	id: "#got",
-	name: "#got#"
 },{
 	id:"#42章经#",
 	name:"#42章经#"
-},{
-	id:"#哈利·波特二十年#",
-	name:"#哈利·波特二十年#"
 }
 ];
 
@@ -44,9 +35,9 @@ var doulist_map = {
 	"1024": {
 		id: "1024"
 		, name: "1024"
-		, default: "46034615"//"45928417"
+		, default: "45956630"//"45928417"
 		, domain_rule: {
-			"www.douban.com": "45972652"
+			"www.douban.com": "45956630"
 		}
 	}//end 1024
 };
@@ -435,7 +426,7 @@ var add_menuContext = function () {
 				"title": "保存图片到 " + album_list[a].name,
 				"contexts": ["image"],
 				//"onclick": saveImg,//这里应该有事件吗？
-				"parentId": pid,
+				//"parentId": pid,
 				"id": album_list[a].id
 			});
 			/// 对于这种有 二级标签的，需要 设置一个额外的二级菜单，表示没有标签。
@@ -462,7 +453,7 @@ var add_menuContext = function () {
 				"title": "保存图片到 " + album_list[a].name,
 				"contexts": ["image"],
 				"onclick": saveImg,
-				"parentId": pid,
+				//"parentId": pid,
 				"id": album_list[a].id + "|" + album_list[a].name
 			});
 		}
