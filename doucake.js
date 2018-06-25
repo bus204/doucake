@@ -994,7 +994,7 @@ var methodManager = {
             response.pageUrl = window.location.href;
         }
 
-        if(response.author.length>0){
+        if(response.author && response.author.length>0){
             console.log("response.author:"+response.author);
             var author_prefix="#"+response.author.replace(/@/g,'')+"#";
             if(!response.title){

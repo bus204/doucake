@@ -9,6 +9,9 @@
 var post_to_guangbo_list = [{
 	id: "#douban_guangbo",
 	name: "发豆瓣广播"
+},{
+	id:"#世界杯#",
+	name:"#世界杯#"
 }, {
 	id: "#42_low_card",
 	name: "#42路# #低俗广播#"

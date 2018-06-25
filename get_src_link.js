@@ -370,15 +370,30 @@ window.get_zhihu_answer_link = function (aoReq) {
 	if (/\/collection\/\d+/.test(window.location.pathname)) {
 		console.log("知乎收藏栏");
 		var zm_item = $("img[src='" + aoReq.img_url + "']").parents(".zm-item");
-		retObj.title = zm_item.find("h2").find("a").text();
-		retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
-		var tmpLink= zm_item.find("link[itemprop='url']").attr("href");
-		if(tmpLink.indexOf("/")==0){
-			tmpLink= window.location.hostname + tmpLink;
+		if("AnswerItem"==zm_item.attr("data-za-module")){
+			//知乎回答
+			retObj.title = zm_item.find("h2").find("a").text();
+			retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
+			var tmpLink= zm_item.find("link[itemprop='url']").attr("href");
+			if(tmpLink.indexOf("/")==0){
+				tmpLink= window.location.hostname + tmpLink;
+			}
+			retObj.link = tmpLink;
+			console.log("AnswerItem under zhihu collect : " + JSON.stringify(retObj));
+			return retObj;
 		}
-		retObj.link = tmpLink;
-		console.log("retObj under zhihu collect : " + JSON.stringify(retObj));
-		return retObj;
+		if("PinItem"==zm_item.attr("data-za-module")){
+			//知乎想法
+			retObj.author = zm_item.find("span.author-link-line").find("a.author-link").text();
+			retObj.title = retObj.author+"的知乎想法：";
+			var tmpLink= zm_item.find("a.meta-item").attr("href");
+			if(tmpLink.indexOf("/")==0){
+				tmpLink= window.location.hostname + tmpLink;
+			}
+			retObj.link = tmpLink;
+			console.log("pinItem under zhihu collect : " + JSON.stringify(retObj));
+			return retObj;
+		}
 	}
 
 	if (/\/question\/\d+/.test(window.location.pathname)) {

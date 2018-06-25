@@ -18,7 +18,7 @@
     "default_icon": "icon16.png"  
   }
  ,
-   "permissions": [ "contextMenus","notifications","tabs","http://*.com/"],
+   "permissions": [ "contextMenus","notifications","tabs","http://*.com/","unlimitedStorage"],
    "background": {
         "scripts":      [ "menuContexts.js" ]
     }
