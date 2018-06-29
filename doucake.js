@@ -1647,7 +1647,7 @@ $("div.top-nav-doubanapp").hide();
  * 在Instagram的网页中，展示图片，能够右键菜单选择。
  */
 function show_ins_page(){
-    var divMask=$("div._si7dy,div._rcw2i");
+    var divMask=$("div._si7dy,div._rcw2i,div._9AhH0");
     console.log("under instagram :" + divMask.length);
     divMask.css("position", "relative");
     if(0==divMask.length){
