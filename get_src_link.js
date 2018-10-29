@@ -343,6 +343,7 @@ window.get_instagram_detail_link = function (aoReq) {
 window.get_zhihu_answer_link = function (aoReq) {
 	var retObj = {};
 	console.log("get_zhihu_answer_link img src:" + aoReq.img_url);
+	console.log("window.location.pathname :" + window.location.pathname);
 	var link = window.location.href;
 	if ("zhuanlan.zhihu.com" === window.location.hostname) {
 		console.log("专栏详情页");
@@ -351,10 +352,13 @@ window.get_zhihu_answer_link = function (aoReq) {
 		return retObj;
 	}
 	var bHasFind = false;
-	if ("/" == window.location.pathname) {
+	if ("/" == window.location.pathname
+		|| "/follow"== window.location.pathname
+	) {
 		console.log("知乎首页");
-		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.Feed");
+		var zm_item = $("img[src='" + aoReq.img_url + "']").parents("div.Card");
 		if(zm_item){
+			this.console.log("find zm_itme success")
 			retObj.title = zm_item.find("h2.ContentItem-title").find("a").text();
 			retObj.link = zm_item.find("h2.ContentItem-title").find("a").attr("href");
 			if(0==retObj.link.indexOf("//")){
@@ -363,6 +367,8 @@ window.get_zhihu_answer_link = function (aoReq) {
 				retObj.link=window.location.hostname + retObj.link;
 			}
 			retObj.author = zm_item.find("div.AuthorInfo-content").find("span.UserLink").find("a.UserLink-link").text();
+		}else{
+			this.console.log("find zm_itme failed")
 		}
 		console.log(" 知乎首页 retObj : " + JSON.stringify(retObj));
 		return retObj;
