@@ -68,6 +68,27 @@ function parseQueryString(vhref) {
     }
     return vars;
 }
+
+console.log("try to find /contacts/rlist");
+var _a=$("p.rev-link").find("a");
+if(_a.attr("href")=="/contacts/rlist"){
+    document.title=_a.text();
+}else{
+    /**
+     * 判断一个用户是否已经关注了我，
+     * 如果已经关注了我，在用户的 个人介绍 div 中展示特殊字符。
+     */
+    if (/\/people\/.*?/.test(window.location.pathname)) {
+        console.log("in someone index");
+        if ($("textarea[name='bp_text']").length > 0) {
+            console.log(window.location.pathname + " has follow you");
+            var _html = $("div.user-info").html();
+            $("div.user-info").html("===√<br/>" + _html);
+            document.title="<<" +document.title;
+        }
+    }
+}
+
 window.parseQueryString = parseQueryString;
 /**
  * 判断目标相册ID 是否为 广播中的话题。当 album 以 “#” 开头时，认为是一个 广播中的话题。
@@ -1250,7 +1271,9 @@ var show_all_right_menu = function () {
 
 if ("www.douban.com" == window.location.hostname //
     && $("a.lnk-create").length > 0 //
-    && window.location.href.indexOf("group") == -1) {
+    && window.location.href.indexOf("group") == -1//
+    && "我的相册"==document.title
+    ) {
     console.log("show_all_right_menu");
     show_all_right_menu();
 }
@@ -1622,19 +1645,6 @@ if ("/" == window.location.pathname && window.location.hostname.indexOf("douban.
 
 }
 
-/**
- * 判断一个用户是否已经关注了我，
- * 如果已经关注了我，在用户的 个人介绍 div 中展示特殊字符。
- */
-if (/\/people\/.*?/.test(window.location.pathname)) {
-    console.log("in someone index");
-    if ($("textarea[name='bp_text']").length > 0) {
-        console.log(window.location.pathname + " has follow you");
-        var _html = $("div.user-info").html();
-        $("div.user-info").html("===√<br/>" + _html);
-        document.title="<<" +document.title;
-    }
-}
 
 // 分享你大爷
 if (is_group_topic()) {
